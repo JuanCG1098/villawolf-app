@@ -9,7 +9,7 @@ and what comes next.
 | --- | --- | --- |
 | **1** | Backend solution, data model, DbContext + migration, JWT/Identity, Swagger, Docker, seed | ✅ Done |
 | **2** | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ✅ Done |
-| **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | 🟡 Built (live verify pending) |
+| **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ✅ Built + tested (Docker E2E pending) |
 | 4 | Flutter app: login, dashboard, calendar | ◻ |
 | 5 | Cash-box, inventory (stock discount), cameras | ◻ |
 | 6 | Google Calendar: decoupled design + mocked export | ◻ |
@@ -112,13 +112,14 @@ and working-hours configuration also land here.
 
 ---
 
-## Iteration 3 — Availability engine 🟡 (built, live verification pending)
+## Iteration 3 — Availability engine ✅ (verified via tests; Docker E2E pending)
 
-> The code is complete and the whole solution **builds clean (0 warnings)**. Live end-to-end
-> verification under Docker is **pending**: Docker Desktop hit a stale-socket bug (the AI/Inference
-> manager left orphaned AF_UNIX sockets under `%LOCALAPPDATA%\Docker\run` that not even Windows can
-> remove without a reboot). `EnableDockerAI` was disabled to prevent recurrence; a machine reboot
-> should let the engine start clean, after which this iteration will be verified.
+> The code is complete, the whole solution **builds clean (0 warnings)**, and the availability engine
+> is **verified by 7 passing integration tests** (`tests/VillaWolf.Tests`, xUnit + EF Core InMemory —
+> no Docker needed): free-slot generation, working-hours/overlap validation, total computation, and
+> overbooking. What remains for the Docker end-to-end run is only the DB-level exclusion constraint
+> and real-Postgres timezone behaviour. (Docker Desktop on this machine currently can't create
+> AF_UNIX sockets — a Winsock-level issue, fixed with an elevated `netsh winsock reset` + reboot.)
 
 ### Created
 

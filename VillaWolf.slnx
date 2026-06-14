@@ -5,4 +5,7 @@
     <Project Path="src/VillaWolf.Domain/VillaWolf.Domain.csproj" />
     <Project Path="src/VillaWolf.Infrastructure/VillaWolf.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/VillaWolf.Tests/VillaWolf.Tests.csproj" />
+  </Folder>
 </Solution>
