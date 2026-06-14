@@ -74,6 +74,20 @@ export ConnectionStrings__Default="Host=localhost;Port=5432;Database=villawolf;U
 dotnet run --project src/VillaWolf.Api
 ```
 
+### Frontend (Flutter)
+
+The app lives in `frontend/villawolf_app` (web + Android + iOS, Riverpod + go_router + Dio,
+monochrome VILLAWOLF theme). With the backend running:
+
+```bash
+cd frontend/villawolf_app
+flutter pub get
+flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8080
+```
+
+Log in with the seeded admin (`admin@villawolf.local` / `Admin123$`). Screens: login, dashboard
+(today's KPIs) and the calendar (per-professional day view with appointments and free slots).
+
 ## Roles
 
 `Admin` · `Barber` (barber/stylist) · `Reception` · `Client` (customer app — later phase).

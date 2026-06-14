@@ -10,7 +10,7 @@ and what comes next.
 | **1** | Backend solution, data model, DbContext + migration, JWT/Identity, Swagger, Docker, seed | ✅ Done |
 | **2** | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ✅ Done |
 | **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ✅ Built + tested (Docker E2E pending) |
-| 4 | Flutter app: login, dashboard, calendar | ◻ |
+| **4** | Flutter app: login, dashboard, calendar | ✅ Built + compiles (runtime vs backend pending Docker) |
 | 5 | Cash-box, inventory (stock discount), cameras | ◻ |
 | 6 | Google Calendar: decoupled design + mocked export | ◻ |
 | 7 | UI polish, README, rich seeds, tests for critical rules | ◻ |
@@ -149,3 +149,36 @@ an overlapping booking (409), and an overlapping booking with `allowOverbooking=
 
 Flutter app (web + mobile): login, dashboard and the calendar view — consuming these APIs, styled to
 the monochrome VILLAWOLF brand (see [BRAND.md](BRAND.md)).
+
+---
+
+## Iteration 4 — Flutter app (login · dashboard · calendar) ✅ (compiles; runtime pending Docker)
+
+Flutter app at `frontend/villawolf_app` (web + Android + iOS), monochrome VILLAWOLF theme.
+
+### Created
+
+- **Architecture**: Riverpod (state/DI) + go_router (auth-guarded routing) + Dio (HTTP). Feature-first
+  layout under `lib/src` (`core`, `models`, `services`, `state`, `routing`, `ui`, `features`).
+- **Core**: `AppConfig` (API base URL via `--dart-define=API_BASE_URL`), monochrome `AppTheme`,
+  `Formatters`, `TokenStorage` (shared_preferences).
+- **Auth**: `ApiService` + `AuthController` (login, `/me` restore on startup, logout); JWT attached by a
+  Dio interceptor; go_router redirects between `/splash`, `/login` and the app shell.
+- **UI**: responsive `AppShell` (sidebar on web, drawer on mobile), `BrandMark` (wordmark + ring),
+  `MetricCard`, `StatusChip`, `SectionCard`.
+- **Screens**: **Login** (pre-filled with the seeded admin), **Dashboard** (today's KPIs — counts,
+  revenue, employees, services — and today's appointments), **Calendar** (per-professional day view
+  with appointments and free slots from `/api/schedule/free-slots`).
+
+### What works (verified)
+
+- `flutter analyze` → **No issues found!**
+- `flutter build web` → **builds successfully**.
+
+Runtime against the live API is pending the Docker fix (Winsock); run with
+`flutter run -d chrome --dart-define=API_BASE_URL=http://localhost:8080` once the backend is up.
+
+### What's next (Iteration 5)
+
+Cash-box, inventory (with stock discount on consumption/sale) and the cameras module — backend
+endpoints + their screens.
