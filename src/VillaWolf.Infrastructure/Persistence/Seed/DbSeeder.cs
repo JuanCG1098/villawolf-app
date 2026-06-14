@@ -55,7 +55,7 @@ public static class DbSeeder
     {
         if (await db.BusinessSettings.AnyAsync()) return;
         db.BusinessSettings.Add(new BusinessSettings(
-            "Villa Wolf Barbershop", "America/Argentina/Buenos_Aires", "ARS", 30));
+            "VILLAWOLF — hair studio", "America/Argentina/Buenos_Aires", "ARS", 30));
         await db.SaveChangesAsync();
     }
 

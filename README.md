@@ -1,8 +1,12 @@
-# Villa Wolf — Barbershop Management
+# VILLAWOLF · hair studio — Management app
 
-A full-stack management app for a unisex barbershop/salon: appointments, services, clients, staff
+A full-stack management app for a unisex hair studio: appointments, services, clients, staff
 agendas, availability, cash-box, inventory, device monitoring and reminders. Backend in **.NET 10**,
 frontend in **Flutter** (web + mobile from one codebase).
+
+> **Brand:** minimalist black & white, "VILLAWOLF" wordmark with the *hair studio* tagline and a
+> circular ring motif. The Flutter UI (Iteration 4) follows this identity — see
+> [docs/BRAND.md](docs/BRAND.md).
 
 > **Status:** Iteration 1 complete — backend solution, full data model, database with migrations,
 > JWT authentication and Swagger, all running under Docker. See
