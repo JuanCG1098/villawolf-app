@@ -1,0 +1,17 @@
+<Project>
+
+  <!-- Common build settings shared by every project in the solution. -->
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+
+    <!--
+      Audit only direct package references. The EF Core / Identity design-time tooling pulls in
+      transitive dependencies flagged by the NuGet audit that are build-time-only and never shipped
+      at runtime. Auditing direct dependencies keeps the build clean while still surfacing
+      vulnerabilities in packages this solution actually references and deploys.
+    -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>direct</NuGetAuditMode>
+  </PropertyGroup>
+
+</Project>

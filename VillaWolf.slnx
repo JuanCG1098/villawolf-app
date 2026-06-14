@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/VillaWolf.Api/VillaWolf.Api.csproj" />
+    <Project Path="src/VillaWolf.Application/VillaWolf.Application.csproj" />
+    <Project Path="src/VillaWolf.Domain/VillaWolf.Domain.csproj" />
+    <Project Path="src/VillaWolf.Infrastructure/VillaWolf.Infrastructure.csproj" />
+  </Folder>
+</Solution>

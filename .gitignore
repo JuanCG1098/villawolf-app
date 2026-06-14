@@ -1,0 +1,24 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+
+# Rider / IDEs
+.idea/
+*.suo
+
+# Flutter / Dart (frontend, added in a later iteration)
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+frontend/**/.packages
+
+# Environment
+*.env
+appsettings.*.local.json
+
+# OS
+.DS_Store
+Thumbs.db
