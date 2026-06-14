@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using VillaWolf.Application.Abstractions;
 using VillaWolf.Application.Auth;
 using VillaWolf.Infrastructure.Identity;
 using VillaWolf.Infrastructure.Persistence;
@@ -19,6 +20,7 @@ public static class DependencyInjection
             ?? throw new InvalidOperationException("Connection string 'Default' is not configured.");
 
         services.AddDbContext<AppDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
         services.AddIdentityCore<ApplicationUser>(options =>
             {

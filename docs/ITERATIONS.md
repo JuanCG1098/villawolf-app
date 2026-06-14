@@ -8,8 +8,8 @@ and what comes next.
 | It. | Goal | Status |
 | --- | --- | --- |
 | **1** | Backend solution, data model, DbContext + migration, JWT/Identity, Swagger, Docker, seed | ✅ Done |
-| 2 | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ⏳ Next |
-| 3 | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ◻ |
+| **2** | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ✅ Done |
+| 3 | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ⏳ Next |
 | 4 | Flutter app: login, dashboard, calendar | ◻ |
 | 5 | Cash-box, inventory (stock discount), cameras | ◻ |
 | 6 | Google Calendar: decoupled design + mocked export | ◻ |
@@ -67,3 +67,45 @@ Or open <http://localhost:8080>, use **Authorize**, and try the endpoints.
 CRUD endpoints + application services for **services, add-ons, clients and appointments**, with
 appointment total duration/price computed from the service + add-ons, DTOs, FluentValidation and
 the `Result → ProblemDetails` mapping reused from this iteration.
+
+---
+
+## Iteration 2 — Catalogue, clients & appointments ✅
+
+### Created
+
+- **Persistence abstraction** `IAppDbContext` (Application) implemented by `AppDbContext` — use-case
+  services depend on it instead of per-entity repositories.
+- **Catalog** (`CatalogService`): categories (list/create), services (list with filters/get/create/
+  update/activate/deactivate), add-ons (list/get/create/update/activate/deactivate).
+- **Clients** (`ClientService`): list with search, get, create, update, activate/deactivate, and
+  appointment **history**.
+- **Appointments** (`AppointmentService`): list (filters: date range, employee, client, status), get,
+  create (auto **total duration & price** from service + add-ons, with snapshots), reschedule, and
+  state transitions (confirm/start/complete/cancel/no-show). Overlap (the DB exclusion constraint) is
+  translated to **HTTP 409**.
+- DTOs + FluentValidation validators per feature; `MappingExtensions`; `ValidationFilter` (auto 400);
+  controllers `ServiceCategories`, `Services`, `ServiceAddons`, `Clients`, `Appointments` with
+  role-based authorization. Seed now also creates a sample **barber** (employee + user).
+
+### What works (verified live under Docker)
+
+- `GET /api/services` (8) and `/api/service-addons` (4) from the seed.
+- `POST /api/clients` → created; `POST /api/appointments` with 2 add-ons →
+  `end = start + 50m`, `totalPrice = 9000` (5500 + 1500 + 2000), `totalDurationMinutes = 50`.
+- Overlapping appointment for the same employee → **409**.
+- `POST /api/appointments/{id}/confirm` → `Confirmed`.
+- Invalid client (empty name) → **400**; client history returns the booked appointment.
+
+### How to test
+
+Log in (`/api/auth/login`), then via Swagger or curl: list `/api/services` + `/api/service-addons`,
+create a client, then `POST /api/appointments` with `serviceId`, `employeeId` (seeded barber),
+`clientId`, `startUtc` and `addonIds`. Inspect the computed totals; try an overlapping booking to see
+the 409.
+
+### What's next (Iteration 3)
+
+Availability engine: validate working hours, time blocks/holidays and overbooking authorization
+*before* hitting the DB constraint, plus a **free-slots** endpoint per employee/day. Employees CRUD
+and working-hours configuration also land here.

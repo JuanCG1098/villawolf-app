@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
+using VillaWolf.Api.Common;
 using VillaWolf.Application;
 using VillaWolf.Infrastructure;
 using VillaWolf.Infrastructure.Identity;
@@ -24,7 +25,7 @@ try
         .AddInfrastructure(builder.Configuration);
 
     builder.Services
-        .AddControllers()
+        .AddControllers(options => options.Filters.Add<ValidationFilter>())
         .AddJsonOptions(options =>
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 

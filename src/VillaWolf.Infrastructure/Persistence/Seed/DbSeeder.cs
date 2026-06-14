@@ -23,8 +23,34 @@ public static class DbSeeder
     {
         await SeedRolesAsync(roles);
         await SeedAdminAsync(users);
+        await SeedEmployeesAsync(db, users);
         await SeedBusinessAsync(db);
         await SeedCatalogAsync(db);
+    }
+
+    private static async Task SeedEmployeesAsync(AppDbContext db, UserManager<ApplicationUser> users)
+    {
+        if (await db.Employees.AnyAsync()) return;
+
+        const string email = "barber@villawolf.local";
+        var user = await users.FindByEmailAsync(email);
+        if (user is null)
+        {
+            user = new ApplicationUser
+            {
+                Id = Guid.NewGuid(),
+                UserName = email,
+                Email = email,
+                EmailConfirmed = true,
+                DisplayName = "Lucas Wolf"
+            };
+            var result = await users.CreateAsync(user, "Barber123$");
+            if (!result.Succeeded) return;
+            await users.AddToRoleAsync(user, "Barber");
+        }
+
+        db.Employees.Add(new Employee(user.Id, "Lucas", "Wolf", "+54 11 5555-1234", "#C8B68A"));
+        await db.SaveChangesAsync();
     }
 
     private static async Task SeedRolesAsync(RoleManager<IdentityRole<Guid>> roles)

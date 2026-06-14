@@ -1,0 +1,79 @@
+using VillaWolf.Application.Appointments.Dtos;
+using VillaWolf.Application.Catalog.Dtos;
+using VillaWolf.Application.Clients.Dtos;
+using VillaWolf.Domain.Entities;
+
+namespace VillaWolf.Application.Common.Mapping;
+
+/// <summary>Pure projections from domain entities to DTOs. Entities are never exposed directly.</summary>
+public static class MappingExtensions
+{
+    public static CategoryDto ToDto(this ServiceCategory category)
+        => new(category.Id, category.Name, category.DisplayOrder);
+
+    public static ServiceDto ToDto(this Service service)
+        => new(
+            service.Id,
+            service.Name,
+            service.Description,
+            service.DurationMinutes,
+            service.BasePrice,
+            service.CategoryId,
+            service.Category?.Name ?? string.Empty,
+            service.TargetAudience,
+            service.RequiresPreparation,
+            service.AllowsAddons,
+            service.IsActive);
+
+    public static AddonDto ToDto(this ServiceAddon addon)
+        => new(addon.Id, addon.Name, addon.ExtraDurationMinutes, addon.ExtraPrice, addon.TargetAudience, addon.IsActive);
+
+    public static ClientDto ToDto(this Client client)
+        => new(
+            client.Id,
+            client.FirstName,
+            client.LastName,
+            client.FullName,
+            client.Phone,
+            client.Email,
+            client.BirthDate,
+            client.Notes,
+            client.Preferences,
+            client.IsActive,
+            client.CreatedAtUtc);
+
+    public static ClientListItemDto ToListItem(this Client client)
+        => new(client.Id, client.FullName, client.Phone, client.Email, client.IsActive);
+
+    public static AppointmentAddonDto ToDto(this AppointmentAddon addon)
+        => new(addon.Id, addon.ServiceAddonId, addon.NameSnapshot, addon.PriceSnapshot, addon.DurationSnapshot);
+
+    public static AppointmentDto ToDto(this Appointment appointment)
+        => new(
+            appointment.Id,
+            appointment.ClientId,
+            appointment.EmployeeId,
+            appointment.ServiceId,
+            appointment.ServiceNameSnapshot,
+            appointment.StartUtc,
+            appointment.EndUtc,
+            appointment.TotalDurationMinutes,
+            appointment.TotalPrice,
+            appointment.Status,
+            appointment.BookingChannel,
+            appointment.InternalNotes,
+            appointment.DepositAmount,
+            appointment.PaymentMethod,
+            appointment.Addons.Select(a => a.ToDto()).ToList());
+
+    public static AppointmentListItemDto ToListItem(this Appointment appointment)
+        => new(
+            appointment.Id,
+            appointment.ClientId,
+            appointment.EmployeeId,
+            appointment.ServiceNameSnapshot,
+            appointment.StartUtc,
+            appointment.EndUtc,
+            appointment.TotalPrice,
+            appointment.Status);
+}

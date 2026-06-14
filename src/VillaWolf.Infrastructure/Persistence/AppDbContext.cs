@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using VillaWolf.Application.Abstractions;
 using VillaWolf.Domain.Common;
 using VillaWolf.Domain.Entities;
 using VillaWolf.Infrastructure.Identity;
@@ -15,7 +16,7 @@ namespace VillaWolf.Infrastructure.Persistence;
 /// (18,2). Appointment overlap per employee is additionally enforced by a database exclusion
 /// constraint (added in the initial migration, requires the <c>btree_gist</c> extension).
 /// </summary>
-public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>, IAppDbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

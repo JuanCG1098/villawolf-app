@@ -1,18 +1,26 @@
 using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
+using VillaWolf.Application.Appointments;
+using VillaWolf.Application.Catalog;
+using VillaWolf.Application.Clients;
 
 namespace VillaWolf.Application;
 
 public static class DependencyInjection
 {
     /// <summary>
-    /// Registers application-layer services: FluentValidation validators discovered in this
-    /// assembly (use-case services are added in later iterations).
+    /// Registers application-layer services and the FluentValidation validators discovered in this
+    /// assembly.
     /// </summary>
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), includeInternalTypes: true);
+
+        services.AddScoped<ICatalogService, CatalogService>();
+        services.AddScoped<IClientService, ClientService>();
+        services.AddScoped<IAppointmentService, AppointmentService>();
+
         return services;
     }
 }
