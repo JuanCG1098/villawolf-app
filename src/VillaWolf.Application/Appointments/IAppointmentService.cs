@@ -11,7 +11,7 @@ public interface IAppointmentService
         CancellationToken ct = default);
 
     Task<Result<AppointmentDto>> GetAsync(Guid id, CancellationToken ct = default);
-    Task<Result<AppointmentDto>> CreateAsync(CreateAppointmentRequest request, CancellationToken ct = default);
+    Task<Result<AppointmentDto>> CreateAsync(CreateAppointmentRequest request, bool allowOverbooking, CancellationToken ct = default);
     Task<Result<AppointmentDto>> RescheduleAsync(Guid id, DateTime newStartUtc, CancellationToken ct = default);
 
     Task<Result<AppointmentDto>> ConfirmAsync(Guid id, CancellationToken ct = default);

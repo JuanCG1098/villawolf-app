@@ -1,6 +1,8 @@
 using VillaWolf.Application.Appointments.Dtos;
 using VillaWolf.Application.Catalog.Dtos;
 using VillaWolf.Application.Clients.Dtos;
+using VillaWolf.Application.Employees.Dtos;
+using VillaWolf.Application.Scheduling.Dtos;
 using VillaWolf.Domain.Entities;
 
 namespace VillaWolf.Application.Common.Mapping;
@@ -8,6 +10,27 @@ namespace VillaWolf.Application.Common.Mapping;
 /// <summary>Pure projections from domain entities to DTOs. Entities are never exposed directly.</summary>
 public static class MappingExtensions
 {
+    public static EmployeeDto ToDto(this Employee employee)
+        => new(
+            employee.Id,
+            employee.UserId,
+            employee.FirstName,
+            employee.LastName,
+            employee.FullName,
+            employee.Phone,
+            employee.ColorHex,
+            employee.Bio,
+            employee.AllowsOverbooking,
+            employee.IsActive);
+
+    public static WorkingHourDto ToDto(this WorkingHour workingHour)
+        => new(workingHour.Id, workingHour.EmployeeId, workingHour.DayOfWeek,
+            workingHour.StartTime, workingHour.EndTime, workingHour.IsActive);
+
+    public static TimeBlockDto ToDto(this TimeBlock timeBlock)
+        => new(timeBlock.Id, timeBlock.EmployeeId, timeBlock.StartUtc, timeBlock.EndUtc,
+            timeBlock.Reason, timeBlock.Notes);
+
     public static CategoryDto ToDto(this ServiceCategory category)
         => new(category.Id, category.Name, category.DisplayOrder);
 

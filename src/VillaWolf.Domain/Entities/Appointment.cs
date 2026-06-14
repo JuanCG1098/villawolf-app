@@ -16,7 +16,7 @@ public class Appointment : EntityBase
     private Appointment() { }
 
     public Appointment(Guid clientId, Guid employeeId, Service service, DateTime startUtc,
-        BookingChannel bookingChannel, string? internalNotes)
+        BookingChannel bookingChannel, string? internalNotes, bool isOverbooking = false)
     {
         ClientId = clientId;
         EmployeeId = employeeId;
@@ -27,6 +27,7 @@ public class Appointment : EntityBase
         StartUtc = DateTime.SpecifyKind(startUtc, DateTimeKind.Utc);
         BookingChannel = bookingChannel;
         InternalNotes = internalNotes;
+        IsOverbooking = isOverbooking;
         Status = AppointmentStatus.Pending;
         Recalculate();
     }
@@ -47,6 +48,12 @@ public class Appointment : EntityBase
     public AppointmentStatus Status { get; private set; }
     public string? InternalNotes { get; private set; }
     public BookingChannel BookingChannel { get; private set; }
+
+    /// <summary>
+    /// When true this is an admin-authorized overbooking and is excluded from the database
+    /// no-overlap exclusion constraint (so it may share a slot with another appointment).
+    /// </summary>
+    public bool IsOverbooking { get; private set; }
 
     public decimal? DepositAmount { get; private set; }
     public PaymentMethod? PaymentMethod { get; private set; }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using VillaWolf.Application.Abstractions;
 using VillaWolf.Application.Appointments.Dtos;
 using VillaWolf.Application.Common.Mapping;
+using VillaWolf.Application.Scheduling;
 using VillaWolf.Domain.Common;
 using VillaWolf.Domain.Entities;
 using VillaWolf.Domain.Enums;
@@ -11,8 +12,13 @@ namespace VillaWolf.Application.Appointments;
 public sealed class AppointmentService : IAppointmentService
 {
     private readonly IAppDbContext _db;
+    private readonly ISchedulingService _scheduling;
 
-    public AppointmentService(IAppDbContext db) => _db = db;
+    public AppointmentService(IAppDbContext db, ISchedulingService scheduling)
+    {
+        _db = db;
+        _scheduling = scheduling;
+    }
 
     public async Task<IReadOnlyList<AppointmentListItemDto>> ListAsync(
         DateTime? fromUtc, DateTime? toUtc, Guid? employeeId, Guid? clientId, AppointmentStatus? status,
@@ -37,7 +43,7 @@ public sealed class AppointmentService : IAppointmentService
             : appointment.ToDto();
     }
 
-    public async Task<Result<AppointmentDto>> CreateAsync(CreateAppointmentRequest request, CancellationToken ct = default)
+    public async Task<Result<AppointmentDto>> CreateAsync(CreateAppointmentRequest request, bool allowOverbooking, CancellationToken ct = default)
     {
         var service = await _db.Services.FirstOrDefaultAsync(s => s.Id == request.ServiceId && s.IsActive, ct);
         if (service is null)
@@ -50,7 +56,7 @@ public sealed class AppointmentService : IAppointmentService
             return Result.Failure<AppointmentDto>(Error.Validation("appointment.employee_invalid", "The employee does not exist or is inactive."));
 
         var appointment = new Appointment(request.ClientId, request.EmployeeId, service, request.StartUtc,
-            request.BookingChannel, request.InternalNotes);
+            request.BookingChannel, request.InternalNotes, isOverbooking: allowOverbooking);
 
         if (request.AddonIds is { Count: > 0 })
         {
@@ -58,6 +64,16 @@ public sealed class AppointmentService : IAppointmentService
                 .Where(a => request.AddonIds.Contains(a.Id) && a.IsActive)
                 .ToListAsync(ct);
             foreach (var addon in addons) appointment.AddAddon(addon);
+        }
+
+        // Friendly availability validation (working hours, blocks, overlap) unless this is an
+        // admin-authorized overbooking. The DB exclusion constraint remains the final guard.
+        if (!allowOverbooking)
+        {
+            var availability = await _scheduling.EnsureAvailableAsync(
+                request.EmployeeId, appointment.StartUtc, appointment.TotalDurationMinutes, ct: ct);
+            if (availability.IsFailure)
+                return Result.Failure<AppointmentDto>(availability.Error);
         }
 
         _db.Appointments.Add(appointment);
@@ -80,6 +96,14 @@ public sealed class AppointmentService : IAppointmentService
         var appointment = await _db.Appointments.Include(a => a.Addons).FirstOrDefaultAsync(a => a.Id == id, ct);
         if (appointment is null)
             return Result.Failure<AppointmentDto>(Error.NotFound("appointment.not_found", "Appointment not found."));
+
+        if (!appointment.IsOverbooking)
+        {
+            var availability = await _scheduling.EnsureAvailableAsync(
+                appointment.EmployeeId, newStartUtc, appointment.TotalDurationMinutes, appointment.Id, ct);
+            if (availability.IsFailure)
+                return Result.Failure<AppointmentDto>(availability.Error);
+        }
 
         try
         {

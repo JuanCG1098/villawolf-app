@@ -9,7 +9,7 @@ and what comes next.
 | --- | --- | --- |
 | **1** | Backend solution, data model, DbContext + migration, JWT/Identity, Swagger, Docker, seed | ✅ Done |
 | **2** | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ✅ Done |
-| 3 | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ⏳ Next |
+| **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | 🟡 Built (live verify pending) |
 | 4 | Flutter app: login, dashboard, calendar | ◻ |
 | 5 | Cash-box, inventory (stock discount), cameras | ◻ |
 | 6 | Google Calendar: decoupled design + mocked export | ◻ |
@@ -109,3 +109,42 @@ the 409.
 Availability engine: validate working hours, time blocks/holidays and overbooking authorization
 *before* hitting the DB constraint, plus a **free-slots** endpoint per employee/day. Employees CRUD
 and working-hours configuration also land here.
+
+---
+
+## Iteration 3 — Availability engine 🟡 (built, live verification pending)
+
+> The code is complete and the whole solution **builds clean (0 warnings)**. Live end-to-end
+> verification under Docker is **pending**: Docker Desktop hit a stale-socket bug (the AI/Inference
+> manager left orphaned AF_UNIX sockets under `%LOCALAPPDATA%\Docker\run` that not even Windows can
+> remove without a reboot). `EnableDockerAI` was disabled to prevent recurrence; a machine reboot
+> should let the engine start clean, after which this iteration will be verified.
+
+### Created
+
+- **Employees** (`EmployeeService` + `IUserAccountService` implemented in Infrastructure): list, get,
+  create (creates the identity user + role), update, activate/deactivate. New `EmployeesController`.
+- **Scheduling** (`SchedulingService`): working-hours CRUD (per employee or business-wide), time-block
+  CRUD (breaks/holidays/vacations), and the **availability engine**:
+  - `GetFreeSlotsAsync(employee, date, service?)` — free start times for the day, honouring working
+    hours, existing appointments and blocks, stepped by `BusinessSettings.MinSlotMinutes`, with
+    timezone conversion (`BusinessSettings.TimeZoneId`).
+  - `EnsureAvailableAsync(...)` — validates a requested slot is within working hours, not blocked and
+    not overlapping; used by appointment create/reschedule before the DB constraint.
+  - `ScheduleController` (`/api/schedule/working-hours`, `/time-blocks`, `/free-slots`).
+- **Overbooking**: `Appointment.IsOverbooking`; the exclusion constraint was updated (migration
+  `AddOverbooking`) to exclude overbooking rows, so an admin-authorized overbooking may share a slot.
+  `AppointmentsController` honours `AllowOverbooking` only for Admins.
+- Seed now also creates **business-wide working hours** (Mon–Fri 09–18, Sat 09–14).
+
+### How it will be tested (once Docker is back)
+
+Log in, `GET /api/schedule/free-slots?employeeId=&date=&serviceId=` (expect slots within 09–18),
+book one slot, re-query (slot gone), try a booking outside hours (400 `availability.outside_hours`),
+an overlapping booking (409), and an overlapping booking with `allowOverbooking=true` as Admin
+(succeeds). Plus employee create and working-hours/time-block CRUD.
+
+### What's next (Iteration 4)
+
+Flutter app (web + mobile): login, dashboard and the calendar view — consuming these APIs, styled to
+the monochrome VILLAWOLF brand (see [BRAND.md](BRAND.md)).

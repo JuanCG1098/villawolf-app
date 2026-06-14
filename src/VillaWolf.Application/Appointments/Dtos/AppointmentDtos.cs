@@ -43,6 +43,7 @@ public sealed record CreateAppointmentRequest(
     DateTime StartUtc,
     List<Guid>? AddonIds,
     BookingChannel BookingChannel,
-    string? InternalNotes);
+    string? InternalNotes,
+    bool AllowOverbooking = false);
 
 public sealed record RescheduleAppointmentRequest(DateTime NewStartUtc);

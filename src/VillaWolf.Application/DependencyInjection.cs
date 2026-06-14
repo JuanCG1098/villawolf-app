@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using VillaWolf.Application.Appointments;
 using VillaWolf.Application.Catalog;
 using VillaWolf.Application.Clients;
+using VillaWolf.Application.Employees;
+using VillaWolf.Application.Scheduling;
 
 namespace VillaWolf.Application;
 
@@ -20,6 +22,8 @@ public static class DependencyInjection
         services.AddScoped<ICatalogService, CatalogService>();
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IAppointmentService, AppointmentService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<ISchedulingService, SchedulingService>();
 
         return services;
     }

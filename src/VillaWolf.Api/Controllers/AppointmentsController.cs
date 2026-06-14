@@ -33,7 +33,11 @@ public class AppointmentsController : ControllerBase
     [HttpPost]
     [Authorize(Roles = "Admin,Reception,Barber")]
     public async Task<IActionResult> Create([FromBody] CreateAppointmentRequest request, CancellationToken ct)
-        => (await _appointments.CreateAsync(request, ct)).ToActionResult(this);
+    {
+        // Overbooking is only honoured when explicitly requested by an Admin.
+        var allowOverbooking = request.AllowOverbooking && User.IsInRole("Admin");
+        return (await _appointments.CreateAsync(request, allowOverbooking, ct)).ToActionResult(this);
+    }
 
     [HttpPut("{id:guid}/reschedule")]
     [Authorize(Roles = "Admin,Reception,Barber")]

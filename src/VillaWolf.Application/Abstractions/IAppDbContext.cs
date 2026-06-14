@@ -16,6 +16,9 @@ public interface IAppDbContext
     DbSet<ServiceAddon> ServiceAddons { get; }
     DbSet<Appointment> Appointments { get; }
     DbSet<AppointmentAddon> AppointmentAddons { get; }
+    DbSet<WorkingHour> WorkingHours { get; }
+    DbSet<TimeBlock> TimeBlocks { get; }
+    DbSet<BusinessSettings> BusinessSettings { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

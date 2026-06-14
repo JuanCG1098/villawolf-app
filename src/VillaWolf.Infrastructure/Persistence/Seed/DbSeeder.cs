@@ -25,7 +25,21 @@ public static class DbSeeder
         await SeedAdminAsync(users);
         await SeedEmployeesAsync(db, users);
         await SeedBusinessAsync(db);
+        await SeedWorkingHoursAsync(db);
         await SeedCatalogAsync(db);
+    }
+
+    private static async Task SeedWorkingHoursAsync(AppDbContext db)
+    {
+        if (await db.WorkingHours.AnyAsync()) return;
+
+        DayOfWeek[] weekdays =
+            [DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday];
+        foreach (var day in weekdays)
+            db.WorkingHours.Add(new WorkingHour(null, day, new TimeOnly(9, 0), new TimeOnly(18, 0)));
+
+        db.WorkingHours.Add(new WorkingHour(null, DayOfWeek.Saturday, new TimeOnly(9, 0), new TimeOnly(14, 0)));
+        await db.SaveChangesAsync();
     }
 
     private static async Task SeedEmployeesAsync(AppDbContext db, UserManager<ApplicationUser> users)
