@@ -1,7 +1,10 @@
 using VillaWolf.Application.Appointments.Dtos;
+using VillaWolf.Application.Cameras.Dtos;
+using VillaWolf.Application.Cashbox.Dtos;
 using VillaWolf.Application.Catalog.Dtos;
 using VillaWolf.Application.Clients.Dtos;
 using VillaWolf.Application.Employees.Dtos;
+using VillaWolf.Application.Inventory.Dtos;
 using VillaWolf.Application.Scheduling.Dtos;
 using VillaWolf.Domain.Entities;
 
@@ -30,6 +33,25 @@ public static class MappingExtensions
     public static TimeBlockDto ToDto(this TimeBlock timeBlock)
         => new(timeBlock.Id, timeBlock.EmployeeId, timeBlock.StartUtc, timeBlock.EndUtc,
             timeBlock.Reason, timeBlock.Notes);
+
+    public static PaymentDto ToDto(this Payment payment)
+        => new(payment.Id, payment.AppointmentId, payment.Amount, payment.Method, payment.Type,
+            payment.DiscountAmount, payment.Notes, payment.CreatedAtUtc);
+
+    public static ProductDto ToDto(this Product product)
+        => new(product.Id, product.Name, product.Category, product.CurrentStock, product.MinStock,
+            product.PurchasePrice, product.SalePrice, product.IsActive, product.IsLowStock);
+
+    public static InventoryMovementDto ToDto(this InventoryMovement movement)
+        => new(movement.Id, movement.ProductId, movement.Type, movement.Quantity, movement.StockDelta,
+            movement.AppointmentId, movement.ClientId, movement.UnitPrice, movement.Notes, movement.CreatedAtUtc);
+
+    public static CameraDto ToDto(this CameraDevice camera)
+        => new(camera.Id, camera.Name, camera.Location, camera.PowerType, camera.Status,
+            camera.BatteryLevel, camera.LastCheckedAtUtc, camera.Notes, camera.ExternalStreamUrl, camera.IsLowBattery);
+
+    public static MaintenanceLogDto ToDto(this CameraMaintenanceLog log)
+        => new(log.Id, log.CameraDeviceId, log.Description, log.PerformedBy, log.BatteryLevelAfter, log.PerformedAtUtc);
 
     public static CategoryDto ToDto(this ServiceCategory category)
         => new(category.Id, category.Name, category.DisplayOrder);

@@ -16,6 +16,9 @@ class _Dest {
 const _destinations = [
   _Dest('/', Icons.dashboard_outlined, 'Dashboard'),
   _Dest('/calendar', Icons.calendar_month_outlined, 'Calendario'),
+  _Dest('/cashbox', Icons.point_of_sale_outlined, 'Caja'),
+  _Dest('/inventory', Icons.inventory_2_outlined, 'Inventario'),
+  _Dest('/cameras', Icons.videocam_outlined, 'Cámaras'),
 ];
 
 /// App frame: a fixed sidebar on wide screens, a drawer on narrow ones.

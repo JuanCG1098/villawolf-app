@@ -2,9 +2,12 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using VillaWolf.Application.Appointments;
+using VillaWolf.Application.Cameras;
+using VillaWolf.Application.Cashbox;
 using VillaWolf.Application.Catalog;
 using VillaWolf.Application.Clients;
 using VillaWolf.Application.Employees;
+using VillaWolf.Application.Inventory;
 using VillaWolf.Application.Scheduling;
 
 namespace VillaWolf.Application;
@@ -24,6 +27,9 @@ public static class DependencyInjection
         services.AddScoped<IAppointmentService, AppointmentService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<ISchedulingService, SchedulingService>();
+        services.AddScoped<ICashboxService, CashboxService>();
+        services.AddScoped<IInventoryService, InventoryService>();
+        services.AddScoped<ICameraService, CameraService>();
 
         return services;
     }

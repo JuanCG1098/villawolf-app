@@ -19,6 +19,11 @@ public interface IAppDbContext
     DbSet<WorkingHour> WorkingHours { get; }
     DbSet<TimeBlock> TimeBlocks { get; }
     DbSet<BusinessSettings> BusinessSettings { get; }
+    DbSet<Payment> Payments { get; }
+    DbSet<Product> Products { get; }
+    DbSet<InventoryMovement> InventoryMovements { get; }
+    DbSet<CameraDevice> CameraDevices { get; }
+    DbSet<CameraMaintenanceLog> CameraMaintenanceLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

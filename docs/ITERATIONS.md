@@ -11,7 +11,7 @@ and what comes next.
 | **2** | Endpoints: services, add-ons, clients, appointments (auto duration/price) | ✅ Done |
 | **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ✅ Built + tested (Docker E2E pending) |
 | **4** | Flutter app: login, dashboard, calendar | ✅ Built + compiles (runtime vs backend pending Docker) |
-| 5 | Cash-box, inventory (stock discount), cameras | ◻ |
+| **5** | Cash-box, inventory (stock discount), cameras | ✅ Built + tested (Docker E2E pending) |
 | 6 | Google Calendar: decoupled design + mocked export | ◻ |
 | 7 | UI polish, README, rich seeds, tests for critical rules | ◻ |
 
@@ -182,3 +182,36 @@ Runtime against the live API is pending the Docker fix (Winsock); run with
 
 Cash-box, inventory (with stock discount on consumption/sale) and the cameras module — backend
 endpoints + their screens.
+
+---
+
+## Iteration 5 — Cash-box, inventory & cameras ✅ (built + tested; Docker E2E pending)
+
+### Created
+
+- **Cash-box** (`CashboxService`): register payments, list by date range, and a **daily summary**
+  (total + breakdown by method). `PaymentsController`.
+- **Inventory** (`InventoryService`): product CRUD + activate/deactivate, movement history, and
+  **register movement** which adjusts stock — sales/consumption reduce, purchases/adjustments add —
+  rejecting moves that would drive stock negative (`inventory.insufficient_stock`). `ProductsController`.
+- **Cameras** (`CameraService`): device CRUD, status, battery report, maintenance log — admin/monitoring
+  only (no facial recognition, no biometrics). `CamerasController`.
+- DTOs, FluentValidation validators, mapping and DI for all three; `IAppDbContext` extended with
+  Payments/Products/InventoryMovements/Cameras. Seed adds sample products (one below minimum) and
+  three cameras (one low battery).
+- **Frontend**: Caja (day summary + payments), Inventario (products with low-stock badges), Cámaras
+  (devices with status + battery + low-battery alert + privacy note) screens, plus nav entries.
+
+### What works (verified)
+
+- **Backend**: solution builds clean; **11 integration tests pass** (EF InMemory), incl. 4 new:
+  sale reduces stock, purchase increases stock, sale beyond stock rejected (stock unchanged), and
+  cash-box totals grouped by method.
+- **Frontend**: `flutter analyze` clean + `flutter build web` succeeds.
+
+Live end-to-end (with PostgreSQL) is pending the Docker/Winsock fix.
+
+### What's next (Iteration 6)
+
+Google Calendar integration — designed decoupled behind an interface, with a mocked export and the
+`GoogleEventId` round-trip (no real OAuth in the first pass).

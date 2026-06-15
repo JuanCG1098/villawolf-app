@@ -119,3 +119,123 @@ class FreeSlotModel {
         localEnd: (j['localEnd'] ?? '') as String,
       );
 }
+
+class PaymentModel {
+  PaymentModel({
+    required this.id,
+    required this.amount,
+    required this.method,
+    required this.type,
+    required this.createdAtUtc,
+    this.notes,
+  });
+
+  final String id;
+  final num amount;
+  final String method;
+  final String type;
+  final DateTime createdAtUtc;
+  final String? notes;
+
+  factory PaymentModel.fromJson(Map<String, dynamic> j) => PaymentModel(
+        id: j['id'] as String,
+        amount: (j['amount'] ?? 0) as num,
+        method: (j['method'] ?? '') as String,
+        type: (j['type'] ?? '') as String,
+        createdAtUtc: DateTime.parse(j['createdAtUtc'] as String),
+        notes: j['notes'] as String?,
+      );
+}
+
+class MethodTotalModel {
+  MethodTotalModel({required this.method, required this.total, required this.count});
+
+  final String method;
+  final num total;
+  final int count;
+
+  factory MethodTotalModel.fromJson(Map<String, dynamic> j) => MethodTotalModel(
+        method: (j['method'] ?? '') as String,
+        total: (j['total'] ?? 0) as num,
+        count: (j['count'] ?? 0) as int,
+      );
+}
+
+class CashboxSummaryModel {
+  CashboxSummaryModel({required this.total, required this.count, required this.byMethod});
+
+  final num total;
+  final int count;
+  final List<MethodTotalModel> byMethod;
+
+  factory CashboxSummaryModel.fromJson(Map<String, dynamic> j) => CashboxSummaryModel(
+        total: (j['total'] ?? 0) as num,
+        count: (j['count'] ?? 0) as int,
+        byMethod: ((j['byMethod'] ?? []) as List)
+            .map((e) => MethodTotalModel.fromJson((e as Map).cast<String, dynamic>()))
+            .toList(),
+      );
+}
+
+class ProductModel {
+  ProductModel({
+    required this.id,
+    required this.name,
+    required this.category,
+    required this.currentStock,
+    required this.minStock,
+    required this.isLowStock,
+    required this.isActive,
+    this.salePrice,
+  });
+
+  final String id;
+  final String name;
+  final String category;
+  final int currentStock;
+  final int minStock;
+  final bool isLowStock;
+  final bool isActive;
+  final num? salePrice;
+
+  factory ProductModel.fromJson(Map<String, dynamic> j) => ProductModel(
+        id: j['id'] as String,
+        name: (j['name'] ?? '') as String,
+        category: (j['category'] ?? '') as String,
+        currentStock: (j['currentStock'] ?? 0) as int,
+        minStock: (j['minStock'] ?? 0) as int,
+        isLowStock: (j['isLowStock'] ?? false) as bool,
+        isActive: (j['isActive'] ?? true) as bool,
+        salePrice: j['salePrice'] as num?,
+      );
+}
+
+class CameraModel {
+  CameraModel({
+    required this.id,
+    required this.name,
+    required this.location,
+    required this.powerType,
+    required this.status,
+    required this.isLowBattery,
+    this.batteryLevel,
+  });
+
+  final String id;
+  final String name;
+  final String location;
+  final String powerType;
+  final String status;
+  final bool isLowBattery;
+  final int? batteryLevel;
+
+  factory CameraModel.fromJson(Map<String, dynamic> j) => CameraModel(
+        id: j['id'] as String,
+        name: (j['name'] ?? '') as String,
+        location: (j['location'] ?? '') as String,
+        powerType: (j['powerType'] ?? '') as String,
+        status: (j['status'] ?? '') as String,
+        isLowBattery: (j['isLowBattery'] ?? false) as bool,
+        batteryLevel: j['batteryLevel'] as int?,
+      );
+}

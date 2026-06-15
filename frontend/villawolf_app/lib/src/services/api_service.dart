@@ -56,6 +56,33 @@ class ApiService {
     return _list(res.data, FreeSlotModel.fromJson);
   }
 
+  Future<CashboxSummaryModel> cashboxSummary({DateTime? date}) async {
+    final res = await _dio.get('/api/payments/summary', queryParameters: {
+      if (date != null) 'date': _dateOnly(date),
+    });
+    return CashboxSummaryModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<List<PaymentModel>> listPayments({DateTime? fromUtc, DateTime? toUtc}) async {
+    final res = await _dio.get('/api/payments', queryParameters: {
+      if (fromUtc != null) 'fromUtc': fromUtc.toUtc().toIso8601String(),
+      if (toUtc != null) 'toUtc': toUtc.toUtc().toIso8601String(),
+    });
+    return _list(res.data, PaymentModel.fromJson);
+  }
+
+  Future<List<ProductModel>> listProducts({bool lowStockOnly = false}) async {
+    final res = await _dio.get('/api/products', queryParameters: {
+      if (lowStockOnly) 'lowStockOnly': true,
+    });
+    return _list(res.data, ProductModel.fromJson);
+  }
+
+  Future<List<CameraModel>> listCameras() async {
+    final res = await _dio.get('/api/cameras');
+    return _list(res.data, CameraModel.fromJson);
+  }
+
   static List<T> _list<T>(dynamic data, T Function(Map<String, dynamic>) fromJson) =>
       (data as List).map((e) => fromJson((e as Map).cast<String, dynamic>())).toList();
 

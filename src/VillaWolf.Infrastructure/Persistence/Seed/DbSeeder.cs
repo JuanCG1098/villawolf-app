@@ -27,6 +27,35 @@ public static class DbSeeder
         await SeedBusinessAsync(db);
         await SeedWorkingHoursAsync(db);
         await SeedCatalogAsync(db);
+        await SeedProductsAsync(db);
+        await SeedCamerasAsync(db);
+    }
+
+    private static async Task SeedProductsAsync(AppDbContext db)
+    {
+        if (await db.Products.AnyAsync()) return;
+
+        db.Products.AddRange(
+            new Product("Cera mate", "Styling", 24, 5, 3500m, 7000m),
+            new Product("Shampoo", "Cuidado", 12, 4, 4200m, 8000m),
+            new Product("Aceite para barba", "Barba", 3, 5, 5000m, 9500m), // below minimum
+            new Product("Toallas", "Insumos", 40, 10, 1200m, null));
+
+        await db.SaveChangesAsync();
+    }
+
+    private static async Task SeedCamerasAsync(AppDbContext db)
+    {
+        if (await db.CameraDevices.AnyAsync()) return;
+
+        var entrance = new CameraDevice("Cámara Entrada", "Entrada", CameraPowerType.Solar, null);
+        entrance.ReportBattery(85);
+        var till = new CameraDevice("Cámara Caja", "Caja", CameraPowerType.Electric, null);
+        var storage = new CameraDevice("Cámara Depósito", "Depósito", CameraPowerType.Solar, null);
+        storage.ReportBattery(15); // low battery alert
+
+        db.CameraDevices.AddRange(entrance, till, storage);
+        await db.SaveChangesAsync();
     }
 
     private static async Task SeedWorkingHoursAsync(AppDbContext db)
