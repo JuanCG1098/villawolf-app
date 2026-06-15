@@ -12,7 +12,7 @@ and what comes next.
 | **3** | Availability engine: overlap, working hours, blocks, overbooking; free-slots endpoint | ✅ Built + tested (Docker E2E pending) |
 | **4** | Flutter app: login, dashboard, calendar | ✅ Built + compiles (runtime vs backend pending Docker) |
 | **5** | Cash-box, inventory (stock discount), cameras | ✅ Built + tested (Docker E2E pending) |
-| 6 | Google Calendar: decoupled design + mocked export | ◻ |
+| **6** | Google Calendar: decoupled design + mocked export | ✅ Built + tested |
 | 7 | UI polish, README, rich seeds, tests for critical rules | ◻ |
 
 ---
@@ -215,3 +215,33 @@ Live end-to-end (with PostgreSQL) is pending the Docker/Winsock fix.
 
 Google Calendar integration — designed decoupled behind an interface, with a mocked export and the
 `GoogleEventId` round-trip (no real OAuth in the first pass).
+
+---
+
+## Iteration 6 — Google Calendar integration (decoupled, mocked) ✅
+
+### Created
+
+- **Decoupling**: `ICalendarSyncProvider` (Application abstraction) with two Infrastructure
+  implementations selected by config (`Calendar:Provider`): `MockGoogleCalendarSyncProvider`
+  (returns a synthetic `gcal_…` event id) and `NullCalendarSyncProvider` (feature off). Swapping in a
+  real Google client later means adding one implementation — no changes elsewhere.
+- **`CalendarService`** (Application): manage integration links (connect business/employee calendar,
+  enable/disable, disconnect — reconnecting the same owner updates instead of duplicating) and
+  **export an appointment** — resolves the target calendar (employee link first, else business),
+  creates the event via the provider, stores the returned id on `Appointment.GoogleEventId`, and is
+  **idempotent** (re-exporting returns the existing id, never a duplicate).
+- DTOs, validator, mapping, DI; `IAppDbContext` extended with `GoogleCalendarIntegrations`;
+  `CalendarController` (`/api/calendar/integrations` CRUD + `/api/calendar/appointments/{id}/export`).
+- `Appointment.GoogleEventId` was already in the schema (Iteration 1), so **no migration**.
+
+### What works (verified)
+
+- Solution builds clean; **14 integration tests pass** (EF InMemory), incl. 3 new: export creates an
+  event and is idempotent, a disabled provider reports `calendar.disabled`, and reconnecting the same
+  owner does not duplicate the link.
+
+### What's next (Iteration 7)
+
+Polish: richer seed data, real dashboard screenshots, README pass, and bringing forward more tests —
+plus the full Docker end-to-end run once the Winsock issue is fixed.

@@ -42,4 +42,12 @@ public class GoogleCalendarIntegration : EntityBase
 
     public void SetSyncEnabled(bool enabled) { SyncEnabled = enabled; Touch(); }
     public void MarkSynced() { LastSyncUtc = DateTime.UtcNow; Touch(); }
+
+    /// <summary>Re-point this link to a calendar id and re-enable sync.</summary>
+    public void Reconnect(string googleCalendarId)
+    {
+        GoogleCalendarId = googleCalendarId;
+        SyncEnabled = true;
+        Touch();
+    }
 }

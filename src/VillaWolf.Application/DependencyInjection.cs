@@ -2,6 +2,7 @@ using System.Reflection;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using VillaWolf.Application.Appointments;
+using VillaWolf.Application.Calendar;
 using VillaWolf.Application.Cameras;
 using VillaWolf.Application.Cashbox;
 using VillaWolf.Application.Catalog;
@@ -30,6 +31,7 @@ public static class DependencyInjection
         services.AddScoped<ICashboxService, CashboxService>();
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<ICameraService, CameraService>();
+        services.AddScoped<ICalendarService, CalendarService>();
 
         return services;
     }

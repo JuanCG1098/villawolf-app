@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using VillaWolf.Application.Abstractions;
 using VillaWolf.Application.Auth;
+using VillaWolf.Infrastructure.Calendar;
 using VillaWolf.Infrastructure.Identity;
 using VillaWolf.Infrastructure.Persistence;
 
@@ -54,6 +55,13 @@ public static class DependencyInjection
         services.AddAuthorization();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IUserAccountService, UserAccountService>();
+
+        // Pluggable calendar sync provider (decoupled, selected by configuration).
+        var calendarProvider = configuration["Calendar:Provider"] ?? "MockGoogle";
+        if (string.Equals(calendarProvider, "None", StringComparison.OrdinalIgnoreCase))
+            services.AddSingleton<ICalendarSyncProvider, NullCalendarSyncProvider>();
+        else
+            services.AddSingleton<ICalendarSyncProvider, MockGoogleCalendarSyncProvider>();
 
         return services;
     }
