@@ -23,9 +23,46 @@ class ApiService {
     return _list(res.data, EmployeeModel.fromJson);
   }
 
-  Future<List<ServiceModel>> listServices() async {
-    final res = await _dio.get('/api/services');
+  Future<List<ServiceModel>> listServices({bool includeInactive = false}) async {
+    final res = await _dio.get('/api/services', queryParameters: {
+      if (includeInactive) 'includeInactive': true,
+    });
     return _list(res.data, ServiceModel.fromJson);
+  }
+
+  Future<List<CategoryModel>> listCategories() async {
+    final res = await _dio.get('/api/service-categories');
+    return _list(res.data, CategoryModel.fromJson);
+  }
+
+  Future<ServiceModel> createService(Map<String, dynamic> body) async {
+    final res = await _dio.post('/api/services', data: body);
+    return ServiceModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<ServiceModel> updateService(String id, Map<String, dynamic> body) async {
+    final res = await _dio.put('/api/services/$id', data: body);
+    return ServiceModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<void> setServiceActive(String id, bool active) async {
+    await _dio.patch('/api/services/$id/${active ? 'activate' : 'deactivate'}');
+  }
+
+  Future<EmployeeModel> createEmployee(Map<String, dynamic> body) async {
+    final res = await _dio.post('/api/employees', data: body);
+    return EmployeeModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<void> setEmployeeActive(String id, bool active) async {
+    await _dio.patch('/api/employees/$id/${active ? 'activate' : 'deactivate'}');
+  }
+
+  Future<List<EmployeeModel>> listEmployeesAll({bool includeInactive = true}) async {
+    final res = await _dio.get('/api/employees', queryParameters: {
+      if (includeInactive) 'includeInactive': true,
+    });
+    return _list(res.data, EmployeeModel.fromJson);
   }
 
   Future<List<AppointmentModel>> listAppointments({
@@ -93,6 +130,11 @@ class ApiService {
   Future<ClientModel> getClient(String id) async {
     final res = await _dio.get('/api/clients/$id');
     return ClientModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<DashboardSummaryModel> dashboardSummary() async {
+    final res = await _dio.get('/api/dashboard/summary');
+    return DashboardSummaryModel.fromJson((res.data as Map).cast<String, dynamic>());
   }
 
   Future<CashboxSummaryModel> cashboxSummary({DateTime? date}) async {

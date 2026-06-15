@@ -9,6 +9,7 @@ using VillaWolf.Application.Abstractions;
 using VillaWolf.Application.Auth;
 using VillaWolf.Infrastructure.Calendar;
 using VillaWolf.Infrastructure.Identity;
+using VillaWolf.Infrastructure.Notifications;
 using VillaWolf.Infrastructure.Persistence;
 
 namespace VillaWolf.Infrastructure;
@@ -62,6 +63,8 @@ public static class DependencyInjection
             services.AddSingleton<ICalendarSyncProvider, NullCalendarSyncProvider>();
         else
             services.AddSingleton<ICalendarSyncProvider, MockGoogleCalendarSyncProvider>();
+
+        services.AddSingleton<INotificationSender, MockNotificationSender>();
 
         return services;
     }

@@ -43,6 +43,14 @@ class EmployeeModel {
       );
 }
 
+class CategoryModel {
+  CategoryModel({required this.id, required this.name});
+  final String id;
+  final String name;
+  factory CategoryModel.fromJson(Map<String, dynamic> j) =>
+      CategoryModel(id: j['id'] as String, name: (j['name'] ?? '') as String);
+}
+
 class ServiceModel {
   ServiceModel({
     required this.id,
@@ -50,8 +58,12 @@ class ServiceModel {
     required this.durationMinutes,
     required this.basePrice,
     required this.targetAudience,
+    required this.categoryId,
     required this.categoryName,
+    required this.requiresPreparation,
+    required this.allowsAddons,
     required this.isActive,
+    this.description,
   });
 
   final String id;
@@ -59,8 +71,12 @@ class ServiceModel {
   final int durationMinutes;
   final num basePrice;
   final String targetAudience;
+  final String categoryId;
   final String categoryName;
+  final bool requiresPreparation;
+  final bool allowsAddons;
   final bool isActive;
+  final String? description;
 
   factory ServiceModel.fromJson(Map<String, dynamic> j) => ServiceModel(
         id: j['id'] as String,
@@ -68,8 +84,12 @@ class ServiceModel {
         durationMinutes: (j['durationMinutes'] ?? 0) as int,
         basePrice: (j['basePrice'] ?? 0) as num,
         targetAudience: (j['targetAudience'] ?? 'Unisex') as String,
+        categoryId: (j['categoryId'] ?? '') as String,
         categoryName: (j['categoryName'] ?? '') as String,
+        requiresPreparation: (j['requiresPreparation'] ?? false) as bool,
+        allowsAddons: (j['allowsAddons'] ?? true) as bool,
         isActive: (j['isActive'] ?? true) as bool,
+        description: j['description'] as String?,
       );
 }
 
@@ -268,6 +288,45 @@ class ProductModel {
         isLowStock: (j['isLowStock'] ?? false) as bool,
         isActive: (j['isActive'] ?? true) as bool,
         salePrice: j['salePrice'] as num?,
+      );
+}
+
+class DashboardSummaryModel {
+  DashboardSummaryModel({
+    required this.appointmentsToday,
+    required this.confirmed,
+    required this.pending,
+    required this.completed,
+    required this.revenueToday,
+    required this.activeClients,
+    required this.activeEmployees,
+    required this.activeServices,
+    required this.lowStockProducts,
+    required this.camerasNeedingAttention,
+  });
+
+  final int appointmentsToday;
+  final int confirmed;
+  final int pending;
+  final int completed;
+  final num revenueToday;
+  final int activeClients;
+  final int activeEmployees;
+  final int activeServices;
+  final int lowStockProducts;
+  final int camerasNeedingAttention;
+
+  factory DashboardSummaryModel.fromJson(Map<String, dynamic> j) => DashboardSummaryModel(
+        appointmentsToday: (j['appointmentsToday'] ?? 0) as int,
+        confirmed: (j['confirmed'] ?? 0) as int,
+        pending: (j['pending'] ?? 0) as int,
+        completed: (j['completed'] ?? 0) as int,
+        revenueToday: (j['revenueToday'] ?? 0) as num,
+        activeClients: (j['activeClients'] ?? 0) as int,
+        activeEmployees: (j['activeEmployees'] ?? 0) as int,
+        activeServices: (j['activeServices'] ?? 0) as int,
+        lowStockProducts: (j['lowStockProducts'] ?? 0) as int,
+        camerasNeedingAttention: (j['camerasNeedingAttention'] ?? 0) as int,
       );
 }
 

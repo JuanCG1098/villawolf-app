@@ -6,9 +6,11 @@ using VillaWolf.Application.Calendar;
 using VillaWolf.Application.Cameras;
 using VillaWolf.Application.Cashbox;
 using VillaWolf.Application.Catalog;
+using VillaWolf.Application.Dashboard;
 using VillaWolf.Application.Clients;
 using VillaWolf.Application.Employees;
 using VillaWolf.Application.Inventory;
+using VillaWolf.Application.Notifications;
 using VillaWolf.Application.Scheduling;
 
 namespace VillaWolf.Application;
@@ -32,6 +34,8 @@ public static class DependencyInjection
         services.AddScoped<IInventoryService, InventoryService>();
         services.AddScoped<ICameraService, CameraService>();
         services.AddScoped<ICalendarService, CalendarService>();
+        services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<INotificationService, NotificationService>();
 
         return services;
     }

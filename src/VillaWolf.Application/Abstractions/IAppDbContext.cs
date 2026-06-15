@@ -25,6 +25,7 @@ public interface IAppDbContext
     DbSet<CameraDevice> CameraDevices { get; }
     DbSet<CameraMaintenanceLog> CameraMaintenanceLogs { get; }
     DbSet<GoogleCalendarIntegration> GoogleCalendarIntegrations { get; }
+    DbSet<Notification> Notifications { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -6,6 +6,7 @@ using VillaWolf.Application.Catalog.Dtos;
 using VillaWolf.Application.Clients.Dtos;
 using VillaWolf.Application.Employees.Dtos;
 using VillaWolf.Application.Inventory.Dtos;
+using VillaWolf.Application.Notifications.Dtos;
 using VillaWolf.Application.Scheduling.Dtos;
 using VillaWolf.Domain.Entities;
 
@@ -57,6 +58,10 @@ public static class MappingExtensions
     public static CalendarIntegrationDto ToDto(this GoogleCalendarIntegration integration)
         => new(integration.Id, integration.OwnerType, integration.EmployeeId, integration.GoogleCalendarId,
             integration.SyncEnabled, integration.LastSyncUtc);
+
+    public static NotificationDto ToDto(this Notification n)
+        => new(n.Id, n.Type, n.Channel, n.RecipientType, n.RecipientId, n.AppointmentId,
+            n.ScheduledForUtc, n.Status, n.SentAtUtc, n.Payload);
 
     public static CategoryDto ToDto(this ServiceCategory category)
         => new(category.Id, category.Name, category.DisplayOrder);

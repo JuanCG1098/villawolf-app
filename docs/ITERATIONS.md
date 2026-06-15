@@ -293,6 +293,15 @@ were read-only):
   added to `ApiService`.
 - `ApiService` extended with `listClients`/`createClient`/`updateClient`/`createAppointment`;
   full-screen form + detail routes added to the router.
+- **Server-side dashboard**: `DashboardService` + `GET /api/dashboard/summary` (today's counts,
+  revenue, active clients/employees/services, low-stock and cameras-to-review). The Flutter dashboard
+  now consumes it instead of computing metrics client-side. (+1 test)
+- **Notifications module (mocked)**: `Notification` entity + `INotificationSender` (mock records intent
+  without contacting WhatsApp/email/push), `NotificationService`, `NotificationsController`. Statuses
+  Pending/Sent/Failed/Mocked. (+1 test)
+- **Services & Employees ABM (frontend)**: `ServicesPage`/`ServiceFormPage` (CRUD + activate/deactivate,
+  category & audience pickers) and `EmployeesPage`/`EmployeeFormPage` (list + create staff user + role,
+  activate/deactivate). New nav entries + routes.
 
-Verified: `flutter analyze` clean + `flutter build web` succeeds. (Live booking/transitions against
-the API are part of the pending Docker E2E.)
+Verified: backend builds clean, **20 tests pass**; `flutter analyze` clean + `flutter build web`
+succeeds. (Live booking/transitions/dashboard against the API are part of the pending Docker E2E.)

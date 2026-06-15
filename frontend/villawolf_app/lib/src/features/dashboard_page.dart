@@ -7,10 +7,7 @@ import '../models/models.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
 
-final _employeesProvider =
-    FutureProvider.autoDispose((ref) => ref.read(apiProvider).listEmployees());
-final _servicesProvider =
-    FutureProvider.autoDispose((ref) => ref.read(apiProvider).listServices());
+final _summaryProvider = FutureProvider.autoDispose((ref) => ref.read(apiProvider).dashboardSummary());
 final _todayProvider = FutureProvider.autoDispose((ref) {
   final now = DateTime.now();
   final start = DateTime(now.year, now.month, now.day);
@@ -22,15 +19,13 @@ class DashboardPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final summary = ref.watch(_summaryProvider);
     final today = ref.watch(_todayProvider);
-    final employees = ref.watch(_employeesProvider);
-    final services = ref.watch(_servicesProvider);
 
     return RefreshIndicator(
       onRefresh: () async {
+        ref.invalidate(_summaryProvider);
         ref.invalidate(_todayProvider);
-        ref.invalidate(_employeesProvider);
-        ref.invalidate(_servicesProvider);
       },
       child: ListView(
         padding: const EdgeInsets.all(24),
@@ -40,14 +35,10 @@ class DashboardPage extends ConsumerWidget {
           const SizedBox(height: 4),
           const Text('Resumen del día', style: TextStyle(color: AppColors.muted)),
           const SizedBox(height: 20),
-          today.when(
-            loading: () => const _Loading(),
-            error: (e, _) => _ErrorBox(message: '$e', onRetry: () => ref.invalidate(_todayProvider)),
-            data: (appts) => _Metrics(
-              appts: appts,
-              employees: employees.valueOrNull?.length,
-              services: services.valueOrNull?.length,
-            ),
+          summary.when(
+            loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
+            error: (e, _) => _ErrorBox(message: '$e', onRetry: () => ref.invalidate(_summaryProvider)),
+            data: (s) => _Metrics(s),
           ),
           const SizedBox(height: 20),
           today.maybeWhen(
@@ -56,8 +47,7 @@ class DashboardPage extends ConsumerWidget {
               child: appts.isEmpty
                   ? const Padding(
                       padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text('No hay turnos para hoy.', style: TextStyle(color: AppColors.muted)),
-                    )
+                      child: Text('No hay turnos para hoy.', style: TextStyle(color: AppColors.muted)))
                   : Column(children: [for (final a in appts) _AppointmentRow(a)]),
             ),
             orElse: () => const SizedBox.shrink(),
@@ -69,31 +59,24 @@ class DashboardPage extends ConsumerWidget {
 }
 
 class _Metrics extends StatelessWidget {
-  const _Metrics({required this.appts, this.employees, this.services});
-
-  final List<AppointmentModel> appts;
-  final int? employees;
-  final int? services;
+  const _Metrics(this.s);
+  final DashboardSummaryModel s;
 
   @override
   Widget build(BuildContext context) {
-    final confirmed = appts.where((a) => a.status == 'Confirmed').length;
-    final pending = appts.where((a) => a.status == 'Pending').length;
-    final revenue = appts
-        .where((a) => a.status == 'Completed')
-        .fold<num>(0, (sum, a) => sum + a.totalPrice);
-
     final cards = <Widget>[
-      MetricCard(icon: Icons.event_available_outlined, value: '${appts.length}', label: 'Turnos hoy'),
-      MetricCard(icon: Icons.check_circle_outline, value: '$confirmed', label: 'Confirmados'),
-      MetricCard(icon: Icons.hourglass_empty, value: '$pending', label: 'Pendientes'),
-      MetricCard(icon: Icons.payments_outlined, value: Formatters.money(revenue), label: 'Ingresos (hoy)'),
-      MetricCard(icon: Icons.people_outline, value: employees?.toString() ?? '—', label: 'Empleados'),
-      MetricCard(icon: Icons.design_services_outlined, value: services?.toString() ?? '—', label: 'Servicios'),
+      MetricCard(icon: Icons.event_available_outlined, value: '${s.appointmentsToday}', label: 'Turnos hoy'),
+      MetricCard(icon: Icons.check_circle_outline, value: '${s.confirmed}', label: 'Confirmados'),
+      MetricCard(icon: Icons.hourglass_empty, value: '${s.pending}', label: 'Pendientes'),
+      MetricCard(icon: Icons.payments_outlined, value: Formatters.money(s.revenueToday), label: 'Ingresos (hoy)'),
+      MetricCard(icon: Icons.people_outline, value: '${s.activeEmployees}', label: 'Empleados'),
+      MetricCard(icon: Icons.design_services_outlined, value: '${s.activeServices}', label: 'Servicios'),
+      MetricCard(icon: Icons.inventory_2_outlined, value: '${s.lowStockProducts}', label: 'Bajo stock'),
+      MetricCard(icon: Icons.videocam_outlined, value: '${s.camerasNeedingAttention}', label: 'Cámaras a revisar'),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {
-      final columns = constraints.maxWidth >= 900 ? 3 : (constraints.maxWidth >= 560 ? 2 : 1);
+      final columns = constraints.maxWidth >= 900 ? 4 : (constraints.maxWidth >= 560 ? 2 : 1);
       const gap = 16.0;
       final width = (constraints.maxWidth - gap * (columns - 1)) / columns;
       return Wrap(
@@ -128,13 +111,6 @@ class _AppointmentRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Loading extends StatelessWidget {
-  const _Loading();
-  @override
-  Widget build(BuildContext context) =>
-      const Padding(padding: EdgeInsets.all(40), child: Center(child: CircularProgressIndicator()));
 }
 
 class _ErrorBox extends StatelessWidget {
