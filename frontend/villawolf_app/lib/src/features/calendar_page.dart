@@ -175,18 +175,27 @@ class _Appointments extends ConsumerWidget {
         return Column(
           children: [
             for (final a in list)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 110,
-                      child: Text('${Formatters.time(a.startUtc)} – ${Formatters.time(a.endUtc)}',
-                          style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600)),
-                    ),
-                    Expanded(child: Text(a.serviceName, style: const TextStyle(color: AppColors.onInk))),
-                    StatusChip(status: a.status),
-                  ],
+              InkWell(
+                onTap: () async {
+                  await context.push('/appointments/${a.id}');
+                  ref.invalidate(_dayAppointmentsProvider);
+                  ref.invalidate(_freeSlotsProvider);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    children: [
+                      SizedBox(
+                        width: 110,
+                        child: Text('${Formatters.time(a.startUtc)} – ${Formatters.time(a.endUtc)}',
+                            style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600)),
+                      ),
+                      Expanded(child: Text(a.serviceName, style: const TextStyle(color: AppColors.onInk))),
+                      StatusChip(status: a.status),
+                      const SizedBox(width: 8),
+                      const Icon(Icons.chevron_right, color: AppColors.muted, size: 18),
+                    ],
+                  ),
                 ),
               ),
           ],

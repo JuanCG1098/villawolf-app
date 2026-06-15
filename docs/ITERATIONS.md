@@ -286,8 +286,13 @@ were read-only):
 - **Appointment booking flow**: `CreateAppointmentPage` — pick client → service → professional → date,
   load **free slots** from `/api/schedule/free-slots`, choose a slot and book via
   `POST /api/appointments`. Launched from a "Nuevo turno" button on the Calendar.
+- **Appointment detail + actions**: `AppointmentDetailPage` (opened by tapping an appointment in the
+  Calendar) shows the full booking (client, time, duration, total, add-ons, notes) and offers the
+  status transitions valid for the current state — confirm / start / complete / cancel / no-show — via
+  the `/api/appointments/{id}/...` endpoints. `getAppointment`, `appointmentAction` and `getClient`
+  added to `ApiService`.
 - `ApiService` extended with `listClients`/`createClient`/`updateClient`/`createAppointment`;
-  full-screen form routes added to the router.
+  full-screen form + detail routes added to the router.
 
-Verified: `flutter analyze` clean + `flutter build web` succeeds. (Live booking against the API is
-part of the pending Docker E2E.)
+Verified: `flutter analyze` clean + `flutter build web` succeeds. (Live booking/transitions against
+the API are part of the pending Docker E2E.)

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/appointment_detail_page.dart';
 import '../features/calendar_page.dart';
 import '../features/cameras_page.dart';
 import '../features/cashbox_page.dart';
@@ -58,6 +59,10 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, state) => ClientFormPage(client: state.extra as ClientModel?),
       ),
       GoRoute(path: '/appointments/new', builder: (_, __) => const CreateAppointmentPage()),
+      GoRoute(
+        path: '/appointments/:id',
+        builder: (_, state) => AppointmentDetailPage(appointmentId: state.pathParameters['id']!),
+      ),
     ],
   );
 });

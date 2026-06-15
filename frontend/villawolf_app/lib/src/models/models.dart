@@ -106,6 +106,67 @@ class AppointmentModel {
       );
 }
 
+class AppointmentAddonModel {
+  AppointmentAddonModel({required this.name, required this.price, required this.durationMinutes});
+
+  final String name;
+  final num price;
+  final int durationMinutes;
+
+  factory AppointmentAddonModel.fromJson(Map<String, dynamic> j) => AppointmentAddonModel(
+        name: (j['name'] ?? '') as String,
+        price: (j['price'] ?? 0) as num,
+        durationMinutes: (j['durationMinutes'] ?? 0) as int,
+      );
+}
+
+class AppointmentDetailModel {
+  AppointmentDetailModel({
+    required this.id,
+    required this.clientId,
+    required this.employeeId,
+    required this.serviceName,
+    required this.startUtc,
+    required this.endUtc,
+    required this.totalDurationMinutes,
+    required this.totalPrice,
+    required this.status,
+    required this.bookingChannel,
+    required this.addons,
+    this.internalNotes,
+  });
+
+  final String id;
+  final String clientId;
+  final String employeeId;
+  final String serviceName;
+  final DateTime startUtc;
+  final DateTime endUtc;
+  final int totalDurationMinutes;
+  final num totalPrice;
+  final String status;
+  final String bookingChannel;
+  final List<AppointmentAddonModel> addons;
+  final String? internalNotes;
+
+  factory AppointmentDetailModel.fromJson(Map<String, dynamic> j) => AppointmentDetailModel(
+        id: j['id'] as String,
+        clientId: (j['clientId'] ?? '') as String,
+        employeeId: (j['employeeId'] ?? '') as String,
+        serviceName: (j['serviceName'] ?? '') as String,
+        startUtc: DateTime.parse(j['startUtc'] as String),
+        endUtc: DateTime.parse(j['endUtc'] as String),
+        totalDurationMinutes: (j['totalDurationMinutes'] ?? 0) as int,
+        totalPrice: (j['totalPrice'] ?? 0) as num,
+        status: (j['status'] ?? 'Pending') as String,
+        bookingChannel: (j['bookingChannel'] ?? '') as String,
+        internalNotes: j['internalNotes'] as String?,
+        addons: ((j['addons'] ?? []) as List)
+            .map((e) => AppointmentAddonModel.fromJson((e as Map).cast<String, dynamic>()))
+            .toList(),
+      );
+}
+
 class FreeSlotModel {
   FreeSlotModel({required this.startUtc, required this.localStart, required this.localEnd});
 

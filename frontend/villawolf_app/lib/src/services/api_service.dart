@@ -79,6 +79,22 @@ class ApiService {
     return AppointmentModel.fromJson((res.data as Map).cast<String, dynamic>());
   }
 
+  Future<AppointmentDetailModel> getAppointment(String id) async {
+    final res = await _dio.get('/api/appointments/$id');
+    return AppointmentDetailModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  /// Runs a status transition: action is one of confirm/start/complete/cancel/no-show.
+  Future<AppointmentDetailModel> appointmentAction(String id, String action) async {
+    final res = await _dio.post('/api/appointments/$id/$action');
+    return AppointmentDetailModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<ClientModel> getClient(String id) async {
+    final res = await _dio.get('/api/clients/$id');
+    return ClientModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
   Future<CashboxSummaryModel> cashboxSummary({DateTime? date}) async {
     final res = await _dio.get('/api/payments/summary', queryParameters: {
       if (date != null) 'date': _dateOnly(date),
