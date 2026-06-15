@@ -13,7 +13,7 @@ and what comes next.
 | **4** | Flutter app: login, dashboard, calendar | ✅ Built + compiles (runtime vs backend pending Docker) |
 | **5** | Cash-box, inventory (stock discount), cameras | ✅ Built + tested (Docker E2E pending) |
 | **6** | Google Calendar: decoupled design + mocked export | ✅ Built + tested |
-| 7 | UI polish, README, rich seeds, tests for critical rules | ◻ |
+| **7** | UI polish, README, rich seeds, tests for critical rules | ✅ Done (screenshots/E2E pending Docker) |
 
 ---
 
@@ -245,3 +245,31 @@ Google Calendar integration — designed decoupled behind an interface, with a m
 
 Polish: richer seed data, real dashboard screenshots, README pass, and bringing forward more tests —
 plus the full Docker end-to-end run once the Winsock issue is fixed.
+
+---
+
+## Iteration 7 — Polish ✅ (screenshots & live E2E pending Docker)
+
+### Created
+
+- **Richer seed** (`SeedDemoActivityAsync`): demo clients and appointments with mixed statuses
+  (completed/confirmed/pending/cancelled, today + tomorrow), payments for the completed ones (incl. a
+  tip) and a stock consumption — so the dashboard, cash-box and calendar show real content on first run.
+- **More tests**: domain rules for appointments (pending-on-create with computed end, add-on
+  recalculation, illegal transition rejected, **price/duration snapshot stays fixed when the service
+  changes**). Total now **18 tests**.
+- **README pass**: status, screenshots placeholder, API overview table, and a *What this project
+  demonstrates* section. Added an **MIT `LICENSE`**.
+
+### What works (verified)
+
+- Solution builds clean; **18 tests pass**; frontend still `flutter analyze` clean + `flutter build web`.
+
+### Pending (need a working Docker)
+
+- Real dashboard/calendar **screenshots** in the README.
+- The **full Docker end-to-end run** (API + PostgreSQL + Flutter) — blocked by the local Winsock
+  issue (fix: elevated `netsh winsock reset` + reboot).
+- Real **Google OAuth** provider to replace the mocked calendar sync.
+
+The 7-iteration MVP is functionally complete and verified offline.

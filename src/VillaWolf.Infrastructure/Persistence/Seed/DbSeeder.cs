@@ -29,6 +29,66 @@ public static class DbSeeder
         await SeedCatalogAsync(db);
         await SeedProductsAsync(db);
         await SeedCamerasAsync(db);
+        await SeedDemoActivityAsync(db);
+    }
+
+    /// <summary>
+    /// Demo appointments (mixed statuses for today + tomorrow), payments for the completed ones and a
+    /// stock consumption — so the dashboard, cash-box and calendar show meaningful content on first run.
+    /// </summary>
+    private static async Task SeedDemoActivityAsync(AppDbContext db)
+    {
+        if (await db.Appointments.AnyAsync()) return;
+
+        var employee = await db.Employees.FirstOrDefaultAsync();
+        var services = await db.Services.OrderBy(s => s.Name).ToListAsync();
+        if (employee is null || services.Count < 4) return;
+
+        var clients = new[]
+        {
+            new Client("Martina", "Gómez", "+54 11 4444-1111", "martina@example.com", new DateOnly(1992, 4, 12)),
+            new Client("Lucía", "Fernández", "+54 11 4444-2222", null, null),
+            new Client("Diego", "Pérez", "+54 11 4444-3333", "diego@example.com", null),
+            new Client("Sofía", "Ramírez", null, null, null),
+        };
+        db.Clients.AddRange(clients);
+
+        var today = DateTime.UtcNow.Date;
+        Appointment Make(Client client, Service service, int hourUtc)
+        {
+            var start = DateTime.SpecifyKind(today.AddHours(hourUtc), DateTimeKind.Utc);
+            return new Appointment(client.Id, employee.Id, service, start, BookingChannel.Manual, null);
+        }
+
+        var completed1 = Make(clients[0], services[0], 12);
+        completed1.Confirm(); completed1.Start(); completed1.Complete();
+        var completed2 = Make(clients[1], services[1], 13);
+        completed2.Confirm(); completed2.Complete();
+        var confirmed = Make(clients[2], services[2], 14);
+        confirmed.Confirm();
+        var pending = Make(clients[3], services[3], 16);            // Coloración (90') -> ends 17:30
+        var cancelled = Make(clients[0], services[0], 17);
+        cancelled.Cancel();                                          // excluded from the no-overlap rule
+        var tomorrow = Make(clients[1], services[0], 36);
+        tomorrow.Confirm();
+
+        db.Appointments.AddRange(completed1, completed2, confirmed, pending, cancelled, tomorrow);
+
+        db.Payments.AddRange(
+            new Payment(completed1.Id, completed1.TotalPrice, PaymentMethod.Cash, PaymentType.Payment, 0, null, null),
+            new Payment(completed1.Id, 500m, PaymentMethod.Cash, PaymentType.Tip, 0, null, null),
+            new Payment(completed2.Id, completed2.TotalPrice, PaymentMethod.Card, PaymentType.Payment, 0, null, null));
+
+        var product = await db.Products.FirstOrDefaultAsync();
+        if (product is not null)
+        {
+            var movement = new InventoryMovement(product.Id, InventoryMovementType.Consumption, 1,
+                completed1.Id, clients[0].Id, null, "Uso en servicio");
+            product.AdjustStock(movement.StockDelta);
+            db.InventoryMovements.Add(movement);
+        }
+
+        await db.SaveChangesAsync();
     }
 
     private static async Task SeedProductsAsync(AppDbContext db)

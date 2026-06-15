@@ -8,9 +8,20 @@ frontend in **Flutter** (web + mobile from one codebase).
 > circular ring motif. The Flutter UI (Iteration 4) follows this identity — see
 > [docs/BRAND.md](docs/BRAND.md).
 
-> **Status:** Iteration 1 complete — backend solution, full data model, database with migrations,
-> JWT authentication and Swagger, all running under Docker. See
-> [docs/ITERATIONS.md](docs/ITERATIONS.md) for the roadmap and per-iteration log.
+> **Status:** all 7 iterations implemented — auth, catalogue, clients, appointments, the availability
+> engine, cash-box, inventory, cameras and (mocked, decoupled) Google Calendar on the backend, plus
+> the Flutter app (login, dashboard, calendar, cash-box, inventory, cameras). Verified by a clean
+> build, **18 integration/domain tests**, and `flutter analyze` + `flutter build web`. See
+> [docs/ITERATIONS.md](docs/ITERATIONS.md) for the per-iteration log.
+
+## Screenshots
+
+> _Placeholder — add login / dashboard / calendar screenshots here once the app is run against the
+> backend (dark monochrome VILLAWOLF theme)._
+
+| Login | Dashboard | Calendar |
+| --- | --- | --- |
+| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
 
 ## Tech stack
 
@@ -21,7 +32,8 @@ frontend in **Flutter** (web + mobile from one codebase).
 | Persistence | EF Core 10 + PostgreSQL (Npgsql) |
 | Auth | ASP.NET Core Identity + JWT bearer |
 | Validation / Logging / Docs | FluentValidation · Serilog · Swagger/OpenAPI |
-| Frontend | Flutter (Web · Android · iOS) — *from Iteration 4* |
+| Frontend | Flutter (Web · Android · iOS) — Riverpod · go_router · Dio |
+| Testing | xUnit · FluentAssertions · EF Core InMemory |
 | Containers | Docker + Docker Compose |
 
 ## Architecture
@@ -45,6 +57,23 @@ be enforced by the database itself** via an exclusion constraint
 (`EXCLUDE USING gist (EmployeeId =, tstzrange(start, end) &&)`), not only in application code —
 overlapping bookings are physically impossible. It also gives native `timestamptz` and `jsonb`
 (used for flexible client preferences).
+
+## API overview
+
+Documented with Swagger at the app root. Main groups:
+
+| Area | Endpoints |
+| --- | --- |
+| Auth | `POST /api/auth/login` · `GET /api/auth/me` |
+| Employees | `GET/POST/PUT /api/employees` · `PATCH .../activate` · `.../deactivate` |
+| Catalogue | `/api/services` · `/api/service-addons` · `/api/service-categories` |
+| Clients | `GET/POST/PUT /api/clients` · `GET /api/clients/{id}/appointments` |
+| Appointments | `GET/POST /api/appointments` · `.../confirm｜start｜complete｜cancel｜no-show` · `.../reschedule` |
+| Scheduling | `/api/schedule/working-hours` · `/api/schedule/time-blocks` · `GET /api/schedule/free-slots` |
+| Cash-box | `POST /api/payments` · `GET /api/payments` · `GET /api/payments/summary` |
+| Inventory | `/api/products` · `POST /api/products/movements` · `GET /api/products/{id}/movements` |
+| Cameras | `/api/cameras` · `.../status` · `.../battery` · `.../maintenance` |
+| Calendar | `/api/calendar/integrations` · `POST /api/calendar/appointments/{id}/export` |
 
 ## Getting started
 
@@ -98,8 +127,24 @@ The shop uses solar security cameras. The cameras module is **device administrat
 only** — registering cameras, status, battery level and maintenance. It performs **no facial
 recognition** and stores **no biometric data** of any kind.
 
+## What this project demonstrates
+
+- **Backend architecture** — Clean Architecture with clear layer boundaries, dependency inversion via
+  an `IAppDbContext` abstraction, the Result pattern and centralized `ProblemDetails` errors.
+- **Domain modeling** — rich entities with invariants (appointments, services, agendas, payments,
+  inventory, cameras), price/duration snapshots, and soft-delete to preserve history.
+- **A real scheduling engine** — timezone-aware availability (working hours, time blocks, overlap),
+  free-slot generation, admin-authorized overbooking, and a **database-enforced** no-overlap guarantee
+  via a PostgreSQL exclusion constraint.
+- **API design & security** — RESTful controllers, JWT auth with role-based authorization, request
+  validation (FluentValidation), Swagger.
+- **Decoupled integrations** — Google Calendar behind a swappable provider interface (mocked now).
+- **Testing** — 18 xUnit tests (domain + application over EF Core InMemory) covering the critical rules.
+- **Frontend integration** — a Flutter app (web + mobile) consuming the API with a clean, branded UI.
+- **Tooling** — Docker Compose (PostgreSQL + API, auto migrate + seed), structured logging.
+
 ## Roadmap
 
-See [docs/ITERATIONS.md](docs/ITERATIONS.md). In short: data model & auth (done) → services/clients/
-appointments → availability engine → Flutter app → cash-box/inventory/cameras → Google Calendar →
-polish, seeds and tests.
+See [docs/ITERATIONS.md](docs/ITERATIONS.md). All 7 iterations are implemented; the remaining
+follow-ups are the live Docker end-to-end run and real dashboard screenshots (both pending a local
+Docker fix), and real Google OAuth in place of the mocked calendar provider.
