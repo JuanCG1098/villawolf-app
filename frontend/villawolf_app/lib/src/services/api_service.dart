@@ -56,6 +56,29 @@ class ApiService {
     return _list(res.data, FreeSlotModel.fromJson);
   }
 
+  Future<List<ClientModel>> listClients({String? search, bool includeInactive = false}) async {
+    final res = await _dio.get('/api/clients', queryParameters: {
+      if (search != null && search.isNotEmpty) 'search': search,
+      if (includeInactive) 'includeInactive': true,
+    });
+    return _list(res.data, ClientModel.fromJson);
+  }
+
+  Future<ClientModel> createClient(Map<String, dynamic> body) async {
+    final res = await _dio.post('/api/clients', data: body);
+    return ClientModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<ClientModel> updateClient(String id, Map<String, dynamic> body) async {
+    final res = await _dio.put('/api/clients/$id', data: body);
+    return ClientModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
+  Future<AppointmentModel> createAppointment(Map<String, dynamic> body) async {
+    final res = await _dio.post('/api/appointments', data: body);
+    return AppointmentModel.fromJson((res.data as Map).cast<String, dynamic>());
+  }
+
   Future<CashboxSummaryModel> cashboxSummary({DateTime? date}) async {
     final res = await _dio.get('/api/payments/summary', queryParameters: {
       if (date != null) 'date': _dateOnly(date),

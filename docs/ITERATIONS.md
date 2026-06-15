@@ -273,3 +273,21 @@ plus the full Docker end-to-end run once the Winsock issue is fixed.
 - Real **Google OAuth** provider to replace the mocked calendar sync.
 
 The 7-iteration MVP is functionally complete and verified offline.
+
+---
+
+## Post-MVP — frontend operational depth
+
+Beyond the 7 iterations, the Flutter app gained the key write/operational flows (the It.4–5 screens
+were read-only):
+
+- **Client management (ABM)**: `ClientsPage` (search + list) and `ClientFormPage` (create/edit) over
+  `/api/clients`. New "Clientes" nav entry.
+- **Appointment booking flow**: `CreateAppointmentPage` — pick client → service → professional → date,
+  load **free slots** from `/api/schedule/free-slots`, choose a slot and book via
+  `POST /api/appointments`. Launched from a "Nuevo turno" button on the Calendar.
+- `ApiService` extended with `listClients`/`createClient`/`updateClient`/`createAppointment`;
+  full-screen form routes added to the router.
+
+Verified: `flutter analyze` clean + `flutter build web` succeeds. (Live booking against the API is
+part of the pending Docker E2E.)

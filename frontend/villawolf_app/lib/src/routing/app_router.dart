@@ -5,9 +5,13 @@ import 'package:go_router/go_router.dart';
 import '../features/calendar_page.dart';
 import '../features/cameras_page.dart';
 import '../features/cashbox_page.dart';
+import '../features/client_form_page.dart';
+import '../features/clients_page.dart';
+import '../features/create_appointment_page.dart';
 import '../features/dashboard_page.dart';
 import '../features/inventory_page.dart';
 import '../features/login_page.dart';
+import '../models/models.dart';
 import '../state/auth_controller.dart';
 import '../ui/app_shell.dart';
 
@@ -44,8 +48,16 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/cashbox', builder: (_, __) => const CashboxPage()),
           GoRoute(path: '/inventory', builder: (_, __) => const InventoryPage()),
           GoRoute(path: '/cameras', builder: (_, __) => const CamerasPage()),
+          GoRoute(path: '/clients', builder: (_, __) => const ClientsPage()),
         ],
       ),
+      // Full-screen forms (own AppBar, outside the shell).
+      GoRoute(path: '/clients/new', builder: (_, __) => const ClientFormPage()),
+      GoRoute(
+        path: '/clients/edit/:id',
+        builder: (_, state) => ClientFormPage(client: state.extra as ClientModel?),
+      ),
+      GoRoute(path: '/appointments/new', builder: (_, __) => const CreateAppointmentPage()),
     ],
   );
 });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../core/formatters.dart';
 import '../core/theme.dart';
@@ -55,8 +56,23 @@ class CalendarPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        const Text('Calendario',
-            style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
+        Row(
+          children: [
+            const Expanded(
+              child: Text('Calendario',
+                  style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
+            ),
+            FilledButton.icon(
+              onPressed: () async {
+                await context.push('/appointments/new');
+                ref.invalidate(_dayAppointmentsProvider);
+                ref.invalidate(_freeSlotsProvider);
+              },
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Nuevo turno'),
+            ),
+          ],
+        ),
         const SizedBox(height: 16),
         Wrap(
           spacing: 12,

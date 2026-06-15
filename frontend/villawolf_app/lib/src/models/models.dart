@@ -210,6 +210,39 @@ class ProductModel {
       );
 }
 
+class ClientModel {
+  ClientModel({
+    required this.id,
+    required this.firstName,
+    required this.lastName,
+    required this.fullName,
+    required this.isActive,
+    this.phone,
+    this.email,
+    this.notes,
+  });
+
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String fullName;
+  final bool isActive;
+  final String? phone;
+  final String? email;
+  final String? notes;
+
+  factory ClientModel.fromJson(Map<String, dynamic> j) => ClientModel(
+        id: j['id'] as String,
+        firstName: (j['firstName'] ?? '') as String,
+        lastName: (j['lastName'] ?? '') as String,
+        fullName: (j['fullName'] ?? '') as String,
+        isActive: (j['isActive'] ?? true) as bool,
+        phone: j['phone'] as String?,
+        email: j['email'] as String?,
+        notes: j['notes'] as String?,
+      );
+}
+
 class CameraModel {
   CameraModel({
     required this.id,
