@@ -11,8 +11,10 @@ frontend in **Flutter** (web + mobile from one codebase).
 > **Status:** all 7 iterations implemented — auth, catalogue, clients, appointments, the availability
 > engine, cash-box, inventory, cameras and (mocked, decoupled) Google Calendar on the backend, plus
 > the Flutter app (login, dashboard, calendar, cash-box, inventory, cameras). Verified by a clean
-> build, **18 integration/domain tests**, and `flutter analyze` + `flutter build web`. See
-> [docs/ITERATIONS.md](docs/ITERATIONS.md) for the per-iteration log.
+> build, **18 integration/domain tests**, `flutter analyze` + `flutter build web`, and a **live
+> end-to-end run under Docker + PostgreSQL** (auth → booking → the no-overlap rule returning `409`,
+> admin overbooking succeeding, and the `btree_gist` exclusion constraint confirmed in the database).
+> See [docs/ITERATIONS.md](docs/ITERATIONS.md) for the per-iteration log.
 
 ## Screenshots
 
@@ -145,6 +147,6 @@ recognition** and stores **no biometric data** of any kind.
 
 ## Roadmap
 
-See [docs/ITERATIONS.md](docs/ITERATIONS.md). All 7 iterations are implemented; the remaining
-follow-ups are the live Docker end-to-end run and real dashboard screenshots (both pending a local
-Docker fix), and real Google OAuth in place of the mocked calendar provider.
+See [docs/ITERATIONS.md](docs/ITERATIONS.md). All 7 iterations are implemented and verified live
+end-to-end under Docker + PostgreSQL. The remaining follow-ups are UI screenshots for this README and
+real Google OAuth in place of the mocked calendar provider.
