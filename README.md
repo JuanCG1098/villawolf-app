@@ -18,12 +18,11 @@ frontend in **Flutter** (web + mobile from one codebase).
 
 ## Screenshots
 
-> _Placeholder — add login / dashboard / calendar screenshots here once the app is run against the
-> backend (dark monochrome VILLAWOLF theme)._
+Flutter web client (dark monochrome VILLAWOLF theme), running against the Dockerized API + PostgreSQL.
 
-| Login | Dashboard | Calendar |
+| Login | Dashboard | Calendar (availability engine) |
 | --- | --- | --- |
-| _(screenshot)_ | _(screenshot)_ | _(screenshot)_ |
+| ![Login](docs/img/01-login.png) | ![Dashboard](docs/img/02-dashboard.png) | ![Calendar](docs/img/03-calendar.png) |
 
 ## Tech stack
 
