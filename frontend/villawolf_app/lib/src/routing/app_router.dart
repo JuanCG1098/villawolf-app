@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../features/appointment_detail_page.dart';
 import '../features/calendar_page.dart';
-import '../features/cameras_page.dart';
 import '../features/cashbox_page.dart';
 import '../features/client_form_page.dart';
 import '../features/clients_page.dart';
@@ -52,7 +51,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(path: '/calendar', builder: (_, __) => const CalendarPage()),
           GoRoute(path: '/cashbox', builder: (_, __) => const CashboxPage()),
           GoRoute(path: '/inventory', builder: (_, __) => const InventoryPage()),
-          GoRoute(path: '/cameras', builder: (_, __) => const CamerasPage()),
           GoRoute(path: '/clients', builder: (_, __) => const ClientsPage()),
           GoRoute(path: '/services', builder: (_, __) => const ServicesPage()),
           GoRoute(path: '/employees', builder: (_, __) => const EmployeesPage()),

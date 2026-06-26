@@ -72,7 +72,6 @@ class _Metrics extends StatelessWidget {
       MetricCard(icon: Icons.people_outline, value: '${s.activeEmployees}', label: 'Empleados'),
       MetricCard(icon: Icons.design_services_outlined, value: '${s.activeServices}', label: 'Servicios'),
       MetricCard(icon: Icons.inventory_2_outlined, value: '${s.lowStockProducts}', label: 'Bajo stock'),
-      MetricCard(icon: Icons.videocam_outlined, value: '${s.camerasNeedingAttention}', label: 'Cámaras a revisar'),
     ];
 
     return LayoutBuilder(builder: (context, constraints) {

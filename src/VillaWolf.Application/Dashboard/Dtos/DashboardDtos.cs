@@ -10,5 +10,4 @@ public sealed record DashboardSummaryDto(
     int ActiveClients,
     int ActiveEmployees,
     int ActiveServices,
-    int LowStockProducts,
-    int CamerasNeedingAttention);
+    int LowStockProducts);

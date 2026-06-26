@@ -19,10 +19,6 @@ public enum TimeBlockReason { Break, Lunch, Maintenance, Errand, Vacation, Holid
 
 public enum InventoryMovementType { Purchase, Sale, Consumption, Adjustment }
 
-public enum CameraPowerType { Solar, Electric }
-
-public enum CameraStatus { Active, Inactive, Maintenance }
-
 public enum NotificationType { Reminder, Confirmation, Cancellation, Reschedule, NoShow, DailyAgenda }
 
 public enum NotificationChannel { WhatsApp, Email, Push }

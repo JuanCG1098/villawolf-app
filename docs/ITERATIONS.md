@@ -3,6 +3,11 @@
 The project is built in iterations. Each entry records what was created, what works, how to test it,
 and what comes next.
 
+> **Note:** the security-cameras module (originally part of Iteration 5) was later removed from the
+> product scope — it added little value for a hair studio. References to it below are kept as a
+> historical record; the module, its entities (`CameraDevice`/`CameraMaintenanceLog`) and tables no
+> longer exist in the codebase.
+
 ## Roadmap
 
 | It. | Goal | Status |

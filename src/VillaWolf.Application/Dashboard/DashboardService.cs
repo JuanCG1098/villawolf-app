@@ -47,8 +47,6 @@ public sealed class DashboardService : IDashboardService
             ActiveClients: await _db.Clients.CountAsync(c => c.IsActive, ct),
             ActiveEmployees: await _db.Employees.CountAsync(e => e.IsActive, ct),
             ActiveServices: await _db.Services.CountAsync(s => s.IsActive, ct),
-            LowStockProducts: products.Count(p => p.CurrentStock <= p.MinStock),
-            CamerasNeedingAttention: await _db.CameraDevices.CountAsync(
-                c => c.Status == CameraStatus.Maintenance || (c.BatteryLevel != null && c.BatteryLevel <= 20), ct));
+            LowStockProducts: products.Count(p => p.CurrentStock <= p.MinStock));
     }
 }

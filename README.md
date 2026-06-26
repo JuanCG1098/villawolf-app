@@ -1,7 +1,7 @@
 # VILLAWOLF · hair studio — Management app
 
 A full-stack management app for a unisex hair studio: appointments, services, clients, staff
-agendas, availability, cash-box, inventory, device monitoring and reminders. Backend in **.NET 10**,
+agendas, availability, cash-box, inventory and reminders. Backend in **.NET 10**,
 frontend in **Flutter** (web + mobile from one codebase).
 
 > **Brand:** minimalist black & white, "VILLAWOLF" wordmark with the *hair studio* tagline and a
@@ -9,9 +9,9 @@ frontend in **Flutter** (web + mobile from one codebase).
 > [docs/BRAND.md](docs/BRAND.md).
 
 > **Status:** all 7 iterations implemented — auth, catalogue, clients, appointments, the availability
-> engine, cash-box, inventory, cameras and (mocked, decoupled) Google Calendar on the backend, plus
-> the Flutter app (login, dashboard, calendar, cash-box, inventory, cameras). Verified by a clean
-> build, **18 integration/domain tests**, `flutter analyze` + `flutter build web`, and a **live
+> engine, cash-box, inventory and (mocked, decoupled) Google Calendar on the backend, plus
+> the Flutter app (login, dashboard, calendar, cash-box, inventory). Verified by a clean
+> build, **20 integration/domain tests**, `flutter analyze` + `flutter build web`, and a **live
 > end-to-end run under Docker + PostgreSQL** (auth → booking → the no-overlap rule returning `409`,
 > admin overbooking succeeding, and the `btree_gist` exclusion constraint confirmed in the database).
 > See [docs/ITERATIONS.md](docs/ITERATIONS.md) for the per-iteration log.
@@ -73,7 +73,6 @@ Documented with Swagger at the app root. Main groups:
 | Scheduling | `/api/schedule/working-hours` · `/api/schedule/time-blocks` · `GET /api/schedule/free-slots` |
 | Cash-box | `POST /api/payments` · `GET /api/payments` · `GET /api/payments/summary` |
 | Inventory | `/api/products` · `POST /api/products/movements` · `GET /api/products/{id}/movements` |
-| Cameras | `/api/cameras` · `.../status` · `.../battery` · `.../maintenance` |
 | Calendar | `/api/calendar/integrations` · `POST /api/calendar/appointments/{id}/export` |
 
 ## Getting started
@@ -122,18 +121,12 @@ Log in with the seeded admin (`admin@villawolf.local` / `Admin123$`). Screens: l
 
 `Admin` · `Barber` (barber/stylist) · `Reception` · `Client` (customer app — later phase).
 
-## Privacy note (security cameras)
-
-The shop uses solar security cameras. The cameras module is **device administration and monitoring
-only** — registering cameras, status, battery level and maintenance. It performs **no facial
-recognition** and stores **no biometric data** of any kind.
-
 ## What this project demonstrates
 
 - **Backend architecture** — Clean Architecture with clear layer boundaries, dependency inversion via
   an `IAppDbContext` abstraction, the Result pattern and centralized `ProblemDetails` errors.
 - **Domain modeling** — rich entities with invariants (appointments, services, agendas, payments,
-  inventory, cameras), price/duration snapshots, and soft-delete to preserve history.
+  inventory), price/duration snapshots, and soft-delete to preserve history.
 - **A real scheduling engine** — timezone-aware availability (working hours, time blocks, overlap),
   free-slot generation, admin-authorized overbooking, and a **database-enforced** no-overlap guarantee
   via a PostgreSQL exclusion constraint.

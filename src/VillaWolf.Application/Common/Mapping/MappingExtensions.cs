@@ -1,6 +1,5 @@
 using VillaWolf.Application.Appointments.Dtos;
 using VillaWolf.Application.Calendar.Dtos;
-using VillaWolf.Application.Cameras.Dtos;
 using VillaWolf.Application.Cashbox.Dtos;
 using VillaWolf.Application.Catalog.Dtos;
 using VillaWolf.Application.Clients.Dtos;
@@ -47,13 +46,6 @@ public static class MappingExtensions
     public static InventoryMovementDto ToDto(this InventoryMovement movement)
         => new(movement.Id, movement.ProductId, movement.Type, movement.Quantity, movement.StockDelta,
             movement.AppointmentId, movement.ClientId, movement.UnitPrice, movement.Notes, movement.CreatedAtUtc);
-
-    public static CameraDto ToDto(this CameraDevice camera)
-        => new(camera.Id, camera.Name, camera.Location, camera.PowerType, camera.Status,
-            camera.BatteryLevel, camera.LastCheckedAtUtc, camera.Notes, camera.ExternalStreamUrl, camera.IsLowBattery);
-
-    public static MaintenanceLogDto ToDto(this CameraMaintenanceLog log)
-        => new(log.Id, log.CameraDeviceId, log.Description, log.PerformedBy, log.BatteryLevelAfter, log.PerformedAtUtc);
 
     public static CalendarIntegrationDto ToDto(this GoogleCalendarIntegration integration)
         => new(integration.Id, integration.OwnerType, integration.EmployeeId, integration.GoogleCalendarId,

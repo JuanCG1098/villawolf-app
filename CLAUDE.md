@@ -5,7 +5,7 @@ Context for AI assistants (and humans) working in this repository.
 ## What this is
 
 **Villa Wolf** — a management app for a unisex barbershop/salon: appointments, services, clients,
-staff agendas/availability, cash-box, inventory, security-camera monitoring and reminders. Backend
+staff agendas/availability, cash-box, inventory and reminders. Backend
 **.NET 10** (Clean Architecture), frontend **Flutter** (web + mobile, from Iteration 4). Built
 iteratively — see [docs/ITERATIONS.md](docs/ITERATIONS.md).
 
@@ -63,4 +63,3 @@ Default admin: `admin@villawolf.local` / `Admin123$`.
   takes a `Func<OpenApiDocument, OpenApiSecurityRequirement>`. See `Program.cs`.
 - The **no-overlap** rule is enforced by a DB exclusion constraint (`ex_appointments_no_overlap`,
   needs `btree_gist`) added in the `InitialCreate` migration — keep it when regenerating migrations.
-- Cameras module is **device admin/monitoring only**: no facial recognition, no biometric data.

@@ -31,7 +31,7 @@ Personas & security: `ApplicationUser` (Identity) · roles · `Employee` (1:1 us
 Catalogue: `ServiceCategory` · `Service` · `ServiceAddon`.
 Booking: `Appointment` · `AppointmentAddon`.
 Agenda: `WorkingHour` · `TimeBlock`.
-Operations: `Payment` · `Product` · `InventoryMovement` · `CameraDevice` · `CameraMaintenanceLog`.
+Operations: `Payment` · `Product` · `InventoryMovement`.
 Cross-cutting: `Notification` · `GoogleCalendarIntegration` · `BusinessSettings`.
 
 ## Key design decisions

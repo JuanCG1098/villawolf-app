@@ -28,7 +28,6 @@ public static class DbSeeder
         await SeedWorkingHoursAsync(db);
         await SeedCatalogAsync(db);
         await SeedProductsAsync(db);
-        await SeedCamerasAsync(db);
         await SeedDemoActivityAsync(db);
     }
 
@@ -104,19 +103,6 @@ public static class DbSeeder
         await db.SaveChangesAsync();
     }
 
-    private static async Task SeedCamerasAsync(AppDbContext db)
-    {
-        if (await db.CameraDevices.AnyAsync()) return;
-
-        var entrance = new CameraDevice("Cámara Entrada", "Entrada", CameraPowerType.Solar, null);
-        entrance.ReportBattery(85);
-        var till = new CameraDevice("Cámara Caja", "Caja", CameraPowerType.Electric, null);
-        var storage = new CameraDevice("Cámara Depósito", "Depósito", CameraPowerType.Solar, null);
-        storage.ReportBattery(15); // low battery alert
-
-        db.CameraDevices.AddRange(entrance, till, storage);
-        await db.SaveChangesAsync();
-    }
 
     private static async Task SeedWorkingHoursAsync(AppDbContext db)
     {

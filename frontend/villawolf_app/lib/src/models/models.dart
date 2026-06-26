@@ -302,7 +302,6 @@ class DashboardSummaryModel {
     required this.activeEmployees,
     required this.activeServices,
     required this.lowStockProducts,
-    required this.camerasNeedingAttention,
   });
 
   final int appointmentsToday;
@@ -314,7 +313,6 @@ class DashboardSummaryModel {
   final int activeEmployees;
   final int activeServices;
   final int lowStockProducts;
-  final int camerasNeedingAttention;
 
   factory DashboardSummaryModel.fromJson(Map<String, dynamic> j) => DashboardSummaryModel(
         appointmentsToday: (j['appointmentsToday'] ?? 0) as int,
@@ -326,7 +324,6 @@ class DashboardSummaryModel {
         activeEmployees: (j['activeEmployees'] ?? 0) as int,
         activeServices: (j['activeServices'] ?? 0) as int,
         lowStockProducts: (j['lowStockProducts'] ?? 0) as int,
-        camerasNeedingAttention: (j['camerasNeedingAttention'] ?? 0) as int,
       );
 }
 
@@ -363,32 +360,3 @@ class ClientModel {
       );
 }
 
-class CameraModel {
-  CameraModel({
-    required this.id,
-    required this.name,
-    required this.location,
-    required this.powerType,
-    required this.status,
-    required this.isLowBattery,
-    this.batteryLevel,
-  });
-
-  final String id;
-  final String name;
-  final String location;
-  final String powerType;
-  final String status;
-  final bool isLowBattery;
-  final int? batteryLevel;
-
-  factory CameraModel.fromJson(Map<String, dynamic> j) => CameraModel(
-        id: j['id'] as String,
-        name: (j['name'] ?? '') as String,
-        location: (j['location'] ?? '') as String,
-        powerType: (j['powerType'] ?? '') as String,
-        status: (j['status'] ?? '') as String,
-        isLowBattery: (j['isLowBattery'] ?? false) as bool,
-        batteryLevel: j['batteryLevel'] as int?,
-      );
-}

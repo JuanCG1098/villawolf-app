@@ -32,8 +32,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<InventoryMovement> InventoryMovements => Set<InventoryMovement>();
-    public DbSet<CameraDevice> CameraDevices => Set<CameraDevice>();
-    public DbSet<CameraMaintenanceLog> CameraMaintenanceLogs => Set<CameraMaintenanceLog>();
     public DbSet<Notification> Notifications => Set<Notification>();
     public DbSet<GoogleCalendarIntegration> GoogleCalendarIntegrations => Set<GoogleCalendarIntegration>();
     public DbSet<BusinessSettings> BusinessSettings => Set<BusinessSettings>();
@@ -80,15 +78,6 @@ public class AppDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid
             b.HasIndex(a => new { a.EmployeeId, a.StartUtc });
             b.HasIndex(a => a.ClientId);
             b.HasIndex(a => a.Status);
-        });
-
-        modelBuilder.Entity<CameraDevice>(b =>
-        {
-            b.HasMany(c => c.MaintenanceLogs)
-                .WithOne()
-                .HasForeignKey(l => l.CameraDeviceId)
-                .OnDelete(DeleteBehavior.Cascade);
-            b.Navigation(c => c.MaintenanceLogs).UsePropertyAccessMode(PropertyAccessMode.Field);
         });
 
         modelBuilder.Entity<WorkingHour>().HasIndex(w => new { w.EmployeeId, w.DayOfWeek });

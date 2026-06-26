@@ -159,11 +159,6 @@ class ApiService {
     return _list(res.data, ProductModel.fromJson);
   }
 
-  Future<List<CameraModel>> listCameras() async {
-    final res = await _dio.get('/api/cameras');
-    return _list(res.data, CameraModel.fromJson);
-  }
-
   static List<T> _list<T>(dynamic data, T Function(Map<String, dynamic>) fromJson) =>
       (data as List).map((e) => fromJson((e as Map).cast<String, dynamic>())).toList();
 

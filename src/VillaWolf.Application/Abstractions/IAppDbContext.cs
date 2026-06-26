@@ -22,8 +22,6 @@ public interface IAppDbContext
     DbSet<Payment> Payments { get; }
     DbSet<Product> Products { get; }
     DbSet<InventoryMovement> InventoryMovements { get; }
-    DbSet<CameraDevice> CameraDevices { get; }
-    DbSet<CameraMaintenanceLog> CameraMaintenanceLogs { get; }
     DbSet<GoogleCalendarIntegration> GoogleCalendarIntegrations { get; }
     DbSet<Notification> Notifications { get; }
 

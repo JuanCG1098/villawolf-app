@@ -21,7 +21,6 @@ const _destinations = [
   _Dest('/employees', Icons.badge_outlined, 'Empleados'),
   _Dest('/cashbox', Icons.point_of_sale_outlined, 'Caja'),
   _Dest('/inventory', Icons.inventory_2_outlined, 'Inventario'),
-  _Dest('/cameras', Icons.videocam_outlined, 'Cámaras'),
 ];
 
 /// App frame: a fixed sidebar on wide screens, a drawer on narrow ones.
