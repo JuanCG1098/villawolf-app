@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme.dart';
 import '../state/auth_controller.dart';
+import '../state/theme_controller.dart';
 import 'widgets.dart';
 
 class _Dest {
@@ -31,20 +31,23 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final wide = MediaQuery.sizeOf(context).width >= 900;
     final location = GoRouterState.of(context).uri.path;
     final user = ref.watch(authControllerProvider).user;
+    final mode = ref.watch(themeControllerProvider);
 
     Widget sidebar() => Container(
           width: 240,
-          color: AppColors.ink,
+          color: t.bgBase,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Padding(padding: EdgeInsets.fromLTRB(20, 26, 20, 26), child: BrandMark()),
               for (final d in _destinations)
-                _NavItem(
-                  dest: d,
+                NavItem(
+                  icon: d.icon,
+                  label: d.label,
                   selected: location == d.path,
                   onTap: () {
                     context.go(d.path);
@@ -52,14 +55,19 @@ class AppShell extends ConsumerWidget {
                   },
                 ),
               const Spacer(),
-              const Divider(height: 1),
+              Divider(height: 1, color: t.borderSubtle),
               ListTile(
-                leading: const Icon(Icons.logout, color: AppColors.muted),
+                leading: Avatar(name: user?.displayName, icon: user == null ? Icons.logout : null, size: 32, highlighted: true),
                 title: Text(user?.displayName ?? 'Salir',
-                    style: const TextStyle(color: AppColors.onInk, fontSize: 13)),
+                    style: TextStyle(color: t.textPrimary, fontSize: 13)),
                 subtitle: user != null
-                    ? Text(user.role, style: const TextStyle(color: AppColors.muted, fontSize: 11))
+                    ? Text(user.role, style: TextStyle(color: t.textMuted, fontSize: 11))
                     : null,
+                trailing: AppIconButton(
+                  icon: mode == ThemeMode.dark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+                  tooltip: 'Cambiar tema',
+                  onPressed: () => ref.read(themeControllerProvider.notifier).toggle(),
+                ),
                 onTap: () => ref.read(authControllerProvider.notifier).logout(),
               ),
               const SizedBox(height: 8),
@@ -72,7 +80,7 @@ class AppShell extends ConsumerWidget {
         body: Row(
           children: [
             sidebar(),
-            const VerticalDivider(width: 1),
+            VerticalDivider(width: 1, color: t.borderSubtle),
             Expanded(child: child),
           ],
         ),
@@ -81,34 +89,8 @@ class AppShell extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const BrandMark(compact: true)),
-      drawer: Drawer(backgroundColor: AppColors.ink, child: sidebar()),
+      drawer: Drawer(backgroundColor: t.bgBase, child: sidebar()),
       body: child,
-    );
-  }
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({required this.dest, required this.selected, required this.onTap});
-
-  final _Dest dest;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: selected ? AppColors.surfaceAlt : Colors.transparent,
-      child: ListTile(
-        leading: Icon(dest.icon, color: selected ? AppColors.accent : AppColors.muted),
-        title: Text(
-          dest.label,
-          style: TextStyle(
-            color: selected ? AppColors.onInk : AppColors.muted,
-            fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-          ),
-        ),
-        onTap: onTap,
-      ),
     );
   }
 }

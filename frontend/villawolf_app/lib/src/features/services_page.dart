@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/formatters.dart';
-import '../core/theme.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
 
@@ -15,31 +14,30 @@ class ServicesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final services = ref.watch(_servicesProvider);
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text('Servicios',
-                  style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
-            ),
-            FilledButton.icon(
+        TopBar(
+          title: 'Servicios',
+          actions: [
+            AppButton(
+              label: 'Nuevo',
+              icon: Icons.add,
+              size: AppButtonSize.sm,
               onPressed: () async {
                 await context.push('/services/new');
                 ref.invalidate(_servicesProvider);
               },
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Nuevo'),
             ),
           ],
         ),
         const SizedBox(height: 16),
         services.when(
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
-          error: (e, _) => Text('No se pudieron cargar los servicios.\n$e', style: const TextStyle(color: AppColors.muted)),
+          loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: RingLoader())),
+          error: (e, _) => Text('No se pudieron cargar los servicios.\n$e', style: TextStyle(color: t.textMuted)),
           data: (list) => SectionCard(
             title: 'Catálogo (${list.length})',
             child: Column(children: [
@@ -55,9 +53,9 @@ class ServicesPage extends ConsumerWidget {
                             ref.invalidate(_servicesProvider);
                           },
                           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                            Text(s.name, style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600)),
+                            Text(s.name, style: TextStyle(color: t.textPrimary, fontWeight: FontWeight.w600)),
                             Text('${s.categoryName} · ${s.durationMinutes}′ · ${Formatters.money(s.basePrice)} · ${Formatters.label(s.targetAudience)}',
-                                style: const TextStyle(color: AppColors.muted, fontSize: 12)),
+                                style: TextStyle(color: t.textMuted, fontSize: 12)),
                           ]),
                         ),
                       ),

@@ -63,14 +63,14 @@ Browse them all live at route **`/_ds`** (the gallery), with a dark/light toggle
 
 ## Compatibility & migration
 
-The 13 existing feature screens still reference colours via the legacy **`AppColors`**
-(`lib/src/core/theme.dart`) — now a const facade whose values mirror the **dark** tokens, so those
-screens compile unchanged and are pinned to the dark preset. `lib/src/ui/widgets.dart` re-exports the
-DS and keeps thin adapters (`PanelCard→SurfaceCard`, `MetricCard→StatCard`,
-`LabeledDropdown→AppDropdown`, `StatusChip→StatusBadge`).
+The 13 feature screens **and the app shell** now read colours from `context.tokens` and use the
+canonical components (`TopBar`, `AppButton`, `SurfaceCard`, `AppTextField`, `StatusBadge`,
+`EmptyState`, `RingLoader`, …), so **dark and light apply across the whole app** (verified on the
+login screen — see `docs/img/screen-login-{dark,light}.png`).
 
-**Next pass:** migrate each screen from `AppColors`/legacy adapters to `context.tokens` + canonical
-components, which also makes light mode (and per-barbershop themes) fully apply to every screen.
+The legacy **`AppColors`** facade (`lib/src/core/theme.dart`) remains only as a fallback for
+`StatusChip.colorFor` in `widgets.dart`; the old widget adapters there are kept for any external
+callers but are no longer used by screens. `AppColors` can be removed once `StatusChip` is dropped.
 
 ## Figma
 

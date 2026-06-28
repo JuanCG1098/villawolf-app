@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../core/theme.dart';
 import '../state/auth_controller.dart';
 import '../ui/widgets.dart';
 
@@ -32,6 +31,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final error = ref.watch(authControllerProvider).error;
     return Scaffold(
       body: Center(
@@ -39,7 +39,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 380),
-            child: PanelCard(
+            child: SurfaceCard(
               padding: const EdgeInsets.all(28),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -47,38 +47,36 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 children: [
                   const Center(child: BrandMark()),
                   const SizedBox(height: 28),
-                  const Text('Iniciar sesión',
-                      style: TextStyle(color: AppColors.onInk, fontSize: 18, fontWeight: FontWeight.w600)),
+                  Text('Iniciar sesión',
+                      style: TextStyle(color: t.textPrimary, fontSize: 18, fontWeight: FontWeight.w600)),
                   const SizedBox(height: 16),
-                  TextField(
+                  AppTextField(
                     controller: _email,
-                    decoration: const InputDecoration(labelText: 'Email'),
+                    label: 'Email',
                     keyboardType: TextInputType.emailAddress,
                   ),
                   const SizedBox(height: 12),
-                  TextField(
+                  AppTextField(
                     controller: _password,
-                    decoration: const InputDecoration(labelText: 'Contraseña'),
+                    label: 'Contraseña',
                     obscureText: true,
                     onSubmitted: (_) => _submit(),
                   ),
                   if (error != null) ...[
                     const SizedBox(height: 12),
-                    Text(error, style: const TextStyle(color: AppColors.red, fontSize: 13)),
+                    Text(error, style: TextStyle(color: t.dangerFg, fontSize: 13)),
                   ],
                   const SizedBox(height: 20),
-                  FilledButton(
+                  AppButton(
+                    label: 'Entrar',
+                    expand: true,
+                    loading: _busy,
                     onPressed: _busy ? null : _submit,
-                    child: _busy
-                        ? const SizedBox(
-                            height: 18, width: 18,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.ink))
-                        : const Text('Entrar'),
                   ),
                   const SizedBox(height: 12),
-                  const Text(r'admin@villawolf.local · Admin123$',
+                  Text(r'admin@villawolf.local · Admin123$',
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: AppColors.muted, fontSize: 11)),
+                      style: TextStyle(color: t.textMuted, fontSize: 11)),
                 ],
               ),
             ),

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
@@ -78,6 +77,7 @@ class _ClientFormPageState extends ConsumerState<ClientFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Scaffold(
       appBar: AppBar(title: Text(_isEdit ? 'Editar cliente' : 'Nuevo cliente')),
       body: Center(
@@ -85,7 +85,7 @@ class _ClientFormPageState extends ConsumerState<ClientFormPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: PanelCard(
+            child: SurfaceCard(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -101,24 +101,26 @@ class _ClientFormPageState extends ConsumerState<ClientFormPage> {
                   TextField(controller: _notes, decoration: const InputDecoration(labelText: 'Observaciones'), maxLines: 3),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
+                    Text(_error!, style: TextStyle(color: t.dangerFg, fontSize: 13)),
                   ],
                   const SizedBox(height: 20),
                   Row(
                     children: [
                       Expanded(
-                        child: OutlinedButton(
+                        child: AppButton(
+                          label: 'Cancelar',
+                          variant: AppButtonVariant.secondary,
+                          expand: true,
                           onPressed: _busy ? null : () => context.pop(),
-                          child: const Text('Cancelar'),
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
-                        child: FilledButton(
+                        child: AppButton(
+                          label: 'Guardar',
+                          expand: true,
+                          loading: _busy,
                           onPressed: _busy ? null : _save,
-                          child: _busy
-                              ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.ink))
-                              : const Text('Guardar'),
                         ),
                       ),
                     ],

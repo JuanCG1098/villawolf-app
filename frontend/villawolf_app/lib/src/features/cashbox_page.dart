@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/formatters.dart';
-import '../core/theme.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
 
@@ -18,6 +17,7 @@ class CashboxPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final summary = ref.watch(_summaryProvider);
     final payments = ref.watch(_paymentsProvider);
 
@@ -29,20 +29,17 @@ class CashboxPage extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.all(24),
         children: [
-          const Text('Caja',
-              style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          const Text('Movimientos del día', style: TextStyle(color: AppColors.muted)),
+          const TopBar(title: 'Caja', subtitle: 'Movimientos del día'),
           const SizedBox(height: 20),
           summary.when(
-            loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
-            error: (e, _) => Text('No se pudo cargar la caja.\n$e', style: const TextStyle(color: AppColors.muted)),
+            loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: RingLoader())),
+            error: (e, _) => Text('No se pudo cargar la caja.\n$e', style: TextStyle(color: t.textMuted)),
             data: (s) {
               final cards = <Widget>[
-                MetricCard(icon: Icons.payments_outlined, value: Formatters.money(s.total), label: 'Total del día'),
-                MetricCard(icon: Icons.receipt_long_outlined, value: '${s.count}', label: 'Movimientos'),
+                StatCard(icon: Icons.payments_outlined, value: Formatters.money(s.total), label: 'Total del día'),
+                StatCard(icon: Icons.receipt_long_outlined, value: '${s.count}', label: 'Movimientos'),
                 for (final m in s.byMethod)
-                  MetricCard(icon: Icons.account_balance_wallet_outlined, value: Formatters.money(m.total), label: Formatters.label(m.method)),
+                  StatCard(icon: Icons.account_balance_wallet_outlined, value: Formatters.money(m.total), label: Formatters.label(m.method)),
               ];
               return LayoutBuilder(builder: (context, c) {
                 final cols = c.maxWidth >= 900 ? 3 : (c.maxWidth >= 560 ? 2 : 1);
@@ -56,20 +53,18 @@ class CashboxPage extends ConsumerWidget {
           SectionCard(
             title: 'Pagos de hoy',
             child: payments.when(
-              loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())),
-              error: (e, _) => Text('$e', style: const TextStyle(color: AppColors.muted)),
+              loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: RingLoader())),
+              error: (e, _) => Text('$e', style: TextStyle(color: t.textMuted)),
               data: (list) => list.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 16),
-                      child: Text('Sin pagos registrados hoy.', style: TextStyle(color: AppColors.muted)))
+                  ? const EmptyState(icon: Icons.point_of_sale_outlined, title: 'Sin pagos registrados hoy')
                   : Column(children: [
                       for (final p in list)
                         Padding(
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           child: Row(children: [
-                            SizedBox(width: 56, child: Text(Formatters.time(p.createdAtUtc), style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600))),
-                            Expanded(child: Text('${Formatters.label(p.method)} · ${Formatters.label(p.type)}', style: const TextStyle(color: AppColors.onInk))),
-                            Text(Formatters.money(p.amount), style: const TextStyle(color: AppColors.accent, fontWeight: FontWeight.w600)),
+                            SizedBox(width: 56, child: Text(Formatters.time(p.createdAtUtc), style: TextStyle(color: t.textPrimary, fontWeight: FontWeight.w600))),
+                            Expanded(child: Text('${Formatters.label(p.method)} · ${Formatters.label(p.type)}', style: TextStyle(color: t.textPrimary))),
+                            Text(Formatters.money(p.amount), style: TextStyle(color: t.brand, fontWeight: FontWeight.w600)),
                           ]),
                         ),
                     ]),

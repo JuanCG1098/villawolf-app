@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
@@ -92,6 +91,7 @@ class _ServiceFormPageState extends ConsumerState<ServiceFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final categories = ref.watch(_categoriesProvider).valueOrNull ?? const <CategoryModel>[];
 
     return Scaffold(
@@ -101,7 +101,7 @@ class _ServiceFormPageState extends ConsumerState<ServiceFormPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
-            child: PanelCard(
+            child: SurfaceCard(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -132,32 +132,25 @@ class _ServiceFormPageState extends ConsumerState<ServiceFormPage> {
                   const SizedBox(height: 4),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Requiere preparación', style: TextStyle(color: AppColors.onInk, fontSize: 14)),
+                    title: Text('Requiere preparación', style: TextStyle(color: t.textPrimary, fontSize: 14)),
                     value: _requiresPrep,
                     onChanged: (v) => setState(() => _requiresPrep = v),
                   ),
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
-                    title: const Text('Permite adicionales', style: TextStyle(color: AppColors.onInk, fontSize: 14)),
+                    title: Text('Permite adicionales', style: TextStyle(color: t.textPrimary, fontSize: 14)),
                     value: _allowsAddons,
                     onChanged: (v) => setState(() => _allowsAddons = v),
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 8),
-                    Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
+                    Text(_error!, style: TextStyle(color: t.dangerFg, fontSize: 13)),
                   ],
                   const SizedBox(height: 16),
                   Row(children: [
-                    Expanded(child: OutlinedButton(onPressed: _busy ? null : () => context.pop(), child: const Text('Cancelar'))),
+                    Expanded(child: AppButton(label: 'Cancelar', variant: AppButtonVariant.secondary, expand: true, onPressed: _busy ? null : () => context.pop())),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: _busy ? null : _save,
-                        child: _busy
-                            ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.ink))
-                            : const Text('Guardar'),
-                      ),
-                    ),
+                    Expanded(child: AppButton(label: 'Guardar', expand: true, loading: _busy, onPressed: _busy ? null : _save)),
                   ]),
                 ],
               ),

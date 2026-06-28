@@ -7,6 +7,8 @@ import '../design/components/components.dart';
 // Re-export the design system so existing `import '../ui/widgets.dart'` keeps working and screens
 // pick up the new token-driven components (BrandMark, SurfaceCard, SectionCard, AppButton, ...).
 export '../design/components/components.dart';
+// Also expose `context.tokens` so screens can read theme-aware colours directly.
+export '../design/theme/app_tokens_extension.dart';
 
 // ── Legacy adapters ───────────────────────────────────────────────────────────────────────────
 // Thin wrappers preserving the old constructors so the 13 feature screens compile unchanged. New

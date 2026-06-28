@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/formatters.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
@@ -40,6 +39,7 @@ class CalendarPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     // Default to the first employee once the list loads.
     ref.listen(_employeesProvider, (_, next) {
       next.whenData((emps) {
@@ -56,20 +56,18 @@ class CalendarPage extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text('Calendario',
-                  style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
-            ),
-            FilledButton.icon(
+        TopBar(
+          title: 'Calendario',
+          actions: [
+            AppButton(
+              label: 'Nuevo turno',
+              icon: Icons.add,
+              size: AppButtonSize.sm,
               onPressed: () async {
                 await context.push('/appointments/new');
                 ref.invalidate(_dayAppointmentsProvider);
                 ref.invalidate(_freeSlotsProvider);
               },
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Nuevo turno'),
             ),
           ],
         ),
@@ -81,26 +79,30 @@ class CalendarPage extends ConsumerWidget {
           children: [
             employees.when(
               loading: () => const SizedBox(width: 240, child: LinearProgressIndicator()),
-              error: (e, _) => Text('Error: $e', style: const TextStyle(color: AppColors.red)),
-              data: (emps) => Container(
+              error: (e, _) => Text('Error: $e', style: TextStyle(color: t.dangerFg)),
+              data: (emps) => SizedBox(
                 width: 240,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceAlt,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: AppColors.line),
-                ),
-                child: DropdownButtonHideUnderline(
-                  child: DropdownButton<String>(
-                    value: selectedEmployee,
-                    isExpanded: true,
-                    dropdownColor: AppColors.surfaceAlt,
-                    hint: const Text('Profesional', style: TextStyle(color: AppColors.muted)),
-                    items: [
-                      for (final e in emps)
-                        DropdownMenuItem(value: e.id, child: Text(e.fullName)),
-                    ],
-                    onChanged: (v) => ref.read(_selectedEmployeeProvider.notifier).state = v,
+                child: Container(
+                  height: 44,
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: t.bgSurfaceAlt,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: t.borderDefault),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: selectedEmployee,
+                      isExpanded: true,
+                      dropdownColor: t.bgElevated,
+                      style: TextStyle(color: t.textPrimary),
+                      hint: Text('Profesional', style: TextStyle(color: t.textMuted)),
+                      items: [
+                        for (final e in emps)
+                          DropdownMenuItem(value: e.id, child: Text(e.fullName)),
+                      ],
+                      onChanged: (v) => ref.read(_selectedEmployeeProvider.notifier).state = v,
+                    ),
                   ),
                 ),
               ),
@@ -161,15 +163,16 @@ class _Appointments extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final appts = ref.watch(_dayAppointmentsProvider);
     return appts.when(
-      loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Text('No se pudieron cargar los turnos.\n$e', style: const TextStyle(color: AppColors.muted)),
+      loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: RingLoader())),
+      error: (e, _) => Text('No se pudieron cargar los turnos.\n$e', style: TextStyle(color: t.textMuted)),
       data: (list) {
         if (list.isEmpty) {
           return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text('Sin turnos para este día.', style: TextStyle(color: AppColors.muted)),
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: EmptyState(icon: Icons.event_busy_outlined, title: 'Sin turnos para este día'),
           );
         }
         return Column(
@@ -188,12 +191,12 @@ class _Appointments extends ConsumerWidget {
                       SizedBox(
                         width: 110,
                         child: Text('${Formatters.time(a.startUtc)} – ${Formatters.time(a.endUtc)}',
-                            style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600)),
+                            style: TextStyle(color: t.textPrimary, fontWeight: FontWeight.w600)),
                       ),
-                      Expanded(child: Text(a.serviceName, style: const TextStyle(color: AppColors.onInk))),
-                      StatusChip(status: a.status),
+                      Expanded(child: Text(a.serviceName, style: TextStyle(color: t.textPrimary))),
+                      StatusBadge(status: a.status, label: Formatters.label(a.status)),
                       const SizedBox(width: 8),
-                      const Icon(Icons.chevron_right, color: AppColors.muted, size: 18),
+                      Icon(Icons.chevron_right, color: t.textMuted, size: 18),
                     ],
                   ),
                 ),
@@ -210,15 +213,16 @@ class _FreeSlots extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final slots = ref.watch(_freeSlotsProvider);
     return slots.when(
-      loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Text('No se pudo calcular la disponibilidad.\n$e', style: const TextStyle(color: AppColors.muted)),
+      loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: RingLoader())),
+      error: (e, _) => Text('No se pudo calcular la disponibilidad.\n$e', style: TextStyle(color: t.textMuted)),
       data: (list) {
         if (list.isEmpty) {
           return const Padding(
-            padding: EdgeInsets.symmetric(vertical: 16),
-            child: Text('Sin horarios disponibles este día.', style: TextStyle(color: AppColors.muted)),
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: EmptyState(icon: Icons.schedule_outlined, title: 'Sin horarios disponibles este día'),
           );
         }
         return Wrap(
@@ -229,11 +233,11 @@ class _FreeSlots extends ConsumerWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceAlt,
+                  color: t.bgSurfaceAlt,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: AppColors.line),
+                  border: Border.all(color: t.borderDefault),
                 ),
-                child: Text(s.localStart, style: const TextStyle(color: AppColors.onInk)),
+                child: Text(s.localStart, style: TextStyle(color: t.textPrimary)),
               ),
           ],
         );

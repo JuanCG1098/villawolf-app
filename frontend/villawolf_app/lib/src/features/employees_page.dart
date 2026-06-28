@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
 
@@ -14,31 +13,30 @@ class EmployeesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = context.tokens;
     final employees = ref.watch(_employeesProvider);
 
     return ListView(
       padding: const EdgeInsets.all(24),
       children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text('Empleados',
-                  style: TextStyle(color: AppColors.onInk, fontSize: 22, fontWeight: FontWeight.w700)),
-            ),
-            FilledButton.icon(
+        TopBar(
+          title: 'Empleados',
+          actions: [
+            AppButton(
+              label: 'Nuevo',
+              icon: Icons.add,
+              size: AppButtonSize.sm,
               onPressed: () async {
                 await context.push('/employees/new');
                 ref.invalidate(_employeesProvider);
               },
-              icon: const Icon(Icons.add, size: 18),
-              label: const Text('Nuevo'),
             ),
           ],
         ),
         const SizedBox(height: 16),
         employees.when(
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
-          error: (e, _) => Text('No se pudieron cargar los empleados.\n$e', style: const TextStyle(color: AppColors.muted)),
+          loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: RingLoader())),
+          error: (e, _) => Text('No se pudieron cargar los empleados.\n$e', style: TextStyle(color: t.textMuted)),
           data: (list) => SectionCard(
             title: 'Equipo (${list.length})',
             child: Column(children: [
@@ -54,7 +52,7 @@ class EmployeesPage extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(child: Text(emp.fullName, style: const TextStyle(color: AppColors.onInk))),
+                    Expanded(child: Text(emp.fullName, style: TextStyle(color: t.textPrimary))),
                     Switch(
                       value: emp.isActive,
                       onChanged: (v) async {
@@ -74,6 +72,6 @@ class EmployeesPage extends ConsumerWidget {
   static Color _parseColor(String hex) {
     final cleaned = hex.replaceAll('#', '');
     final value = int.tryParse(cleaned.length == 6 ? 'FF$cleaned' : cleaned, radix: 16);
-    return value == null ? AppColors.accent : Color(value);
+    return value == null ? const Color(0xFFC8B68A) : Color(value);
   }
 }

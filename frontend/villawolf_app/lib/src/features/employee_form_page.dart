@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../core/theme.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
 
@@ -63,6 +62,7 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return Scaffold(
       appBar: AppBar(title: const Text('Nuevo empleado')),
       body: Center(
@@ -70,7 +70,7 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 480),
-            child: PanelCard(
+            child: SurfaceCard(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -93,20 +93,13 @@ class _EmployeeFormPageState extends ConsumerState<EmployeeFormPage> {
                   ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
+                    Text(_error!, style: TextStyle(color: t.dangerFg, fontSize: 13)),
                   ],
                   const SizedBox(height: 20),
                   Row(children: [
-                    Expanded(child: OutlinedButton(onPressed: _busy ? null : () => context.pop(), child: const Text('Cancelar'))),
+                    Expanded(child: AppButton(label: 'Cancelar', variant: AppButtonVariant.secondary, expand: true, onPressed: _busy ? null : () => context.pop())),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: _busy ? null : _save,
-                        child: _busy
-                            ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.ink))
-                            : const Text('Crear'),
-                      ),
-                    ),
+                    Expanded(child: AppButton(label: 'Crear', expand: true, loading: _busy, onPressed: _busy ? null : _save)),
                   ]),
                 ],
               ),

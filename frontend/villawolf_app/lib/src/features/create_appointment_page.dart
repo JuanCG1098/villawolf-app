@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/formatters.dart';
-import '../core/theme.dart';
 import '../models/models.dart';
 import '../state/providers.dart';
 import '../ui/widgets.dart';
@@ -72,7 +71,7 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
         'bookingChannel': 'Web',
       });
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Turno reservado')));
+        showAppSnackBar(context, 'Turno reservado', intent: AppIntent.success);
         context.pop(true);
       }
     } catch (e) {
@@ -82,6 +81,7 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     final clients = ref.watch(_clientsProvider).valueOrNull ?? const <ClientModel>[];
     final services = ref.watch(_servicesProvider).valueOrNull ?? const <ServiceModel>[];
     final employees = ref.watch(_employeesProvider).valueOrNull ?? const <EmployeeModel>[];
@@ -94,20 +94,22 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
           padding: const EdgeInsets.all(24),
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 520),
-            child: PanelCard(
+            child: SurfaceCard(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _Dropdown(
+                  AppDropdown<String>(
                     label: 'Cliente',
+                    hint: 'Elegir cliente',
                     value: _clientId,
                     items: [for (final c in clients) DropdownMenuItem(value: c.id, child: Text(c.fullName))],
                     onChanged: (v) => setState(() => _clientId = v),
                   ),
                   const SizedBox(height: 12),
-                  _Dropdown(
+                  AppDropdown<String>(
                     label: 'Servicio',
+                    hint: 'Elegir servicio',
                     value: _serviceId,
                     items: [
                       for (final s in services)
@@ -116,8 +118,9 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
                     onChanged: (v) { setState(() => _serviceId = v); _resetSlots(); },
                   ),
                   const SizedBox(height: 12),
-                  _Dropdown(
+                  AppDropdown<String>(
                     label: 'Profesional',
+                    hint: 'Elegir profesional',
                     value: _employeeId,
                     items: [for (final e in employees) DropdownMenuItem(value: e.id, child: Text(e.fullName))],
                     onChanged: (v) { setState(() => _employeeId = v); _resetSlots(); },
@@ -125,12 +128,12 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
                   const SizedBox(height: 12),
                   Row(
                     children: [
-                      const Text('Fecha:', style: TextStyle(color: AppColors.muted)),
+                      Text('Fecha:', style: TextStyle(color: t.textMuted)),
                       IconButton(
                         onPressed: () { setState(() => _date = _date.subtract(const Duration(days: 1))); _resetSlots(); },
                         icon: const Icon(Icons.chevron_left),
                       ),
-                      Text(Formatters.date(_date), style: const TextStyle(color: AppColors.onInk, fontWeight: FontWeight.w600)),
+                      Text(Formatters.date(_date), style: TextStyle(color: t.textPrimary, fontWeight: FontWeight.w600)),
                       IconButton(
                         onPressed: () { setState(() => _date = _date.add(const Duration(days: 1))); _resetSlots(); },
                         icon: const Icon(Icons.chevron_right),
@@ -138,17 +141,18 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
                     ],
                   ),
                   const SizedBox(height: 8),
-                  OutlinedButton.icon(
+                  AppButton(
+                    label: 'Ver horarios disponibles',
+                    variant: AppButtonVariant.secondary,
+                    icon: Icons.search,
                     onPressed: _loadingSlots ? null : _loadSlots,
-                    icon: const Icon(Icons.search, size: 18),
-                    label: const Text('Ver horarios disponibles'),
                   ),
                   const SizedBox(height: 12),
                   if (_loadingSlots)
-                    const Center(child: Padding(padding: EdgeInsets.all(8), child: CircularProgressIndicator()))
+                    const Center(child: Padding(padding: EdgeInsets.all(8), child: RingLoader()))
                   else if (_slots != null)
                     _slots!.isEmpty
-                        ? const Text('Sin horarios disponibles ese día.', style: TextStyle(color: AppColors.muted))
+                        ? Text('Sin horarios disponibles ese día.', style: TextStyle(color: t.textMuted))
                         : Wrap(
                             spacing: 8,
                             runSpacing: 8,
@@ -163,50 +167,19 @@ class _CreateAppointmentPageState extends ConsumerState<CreateAppointmentPage> {
                           ),
                   if (_error != null) ...[
                     const SizedBox(height: 12),
-                    Text(_error!, style: const TextStyle(color: AppColors.red, fontSize: 13)),
+                    Text(_error!, style: TextStyle(color: t.dangerFg, fontSize: 13)),
                   ],
                   const SizedBox(height: 20),
-                  FilledButton(
+                  AppButton(
+                    label: 'Reservar turno',
+                    expand: true,
+                    loading: _booking,
                     onPressed: (canBook && !_booking) ? _book : null,
-                    child: _booking
-                        ? const SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.ink))
-                        : const Text('Reservar turno'),
                   ),
                 ],
               ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Dropdown extends StatelessWidget {
-  const _Dropdown({required this.label, required this.value, required this.items, required this.onChanged});
-
-  final String label;
-  final String? value;
-  final List<DropdownMenuItem<String>> items;
-  final ValueChanged<String?> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceAlt,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.line),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: value,
-          isExpanded: true,
-          dropdownColor: AppColors.surfaceAlt,
-          hint: Text(label, style: const TextStyle(color: AppColors.muted)),
-          items: items,
-          onChanged: onChanged,
         ),
       ),
     );
@@ -222,19 +195,20 @@ class _SlotChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = context.tokens;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? AppColors.accent : AppColors.surfaceAlt,
+          color: selected ? t.brand : t.bgSurfaceAlt,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: selected ? AppColors.accent : AppColors.line),
+          border: Border.all(color: selected ? t.brand : t.borderDefault),
         ),
         child: Text(label,
             style: TextStyle(
-                color: selected ? AppColors.ink : AppColors.onInk,
+                color: selected ? t.onBrand : t.textPrimary,
                 fontWeight: selected ? FontWeight.w700 : FontWeight.w400)),
       ),
     );
