@@ -15,6 +15,7 @@ import '../features/inventory_page.dart';
 import '../features/login_page.dart';
 import '../features/service_form_page.dart';
 import '../features/services_page.dart';
+import '../design/gallery/ds_gallery_page.dart';
 import '../models/models.dart';
 import '../state/auth_controller.dart';
 import '../ui/app_shell.dart';
@@ -31,6 +32,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       final status = ref.read(authControllerProvider).status;
       final location = state.matchedLocation;
 
+      // Design-system gallery is a public debug surface — never gate it behind auth.
+      if (location == '/_ds') return null;
+
       if (status == AuthStatus.unknown) {
         return location == '/splash' ? null : '/splash';
       }
@@ -44,6 +48,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/splash', builder: (_, __) => const _SplashPage()),
       GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
+      GoRoute(path: '/_ds', builder: (_, __) => const DsGalleryPage()),
       ShellRoute(
         builder: (context, state, child) => AppShell(child: child),
         routes: [
