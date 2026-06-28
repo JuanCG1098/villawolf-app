@@ -74,9 +74,25 @@ components, which also makes light mode (and per-barbershop themes) fully apply 
 
 ## Figma
 
-The same tokens are mirrored to a Figma library (variables with Dark/Light modes, text styles and a
-component set) via the official Figma MCP, so design and code stay in sync. Keep
-`semantic_tokens.dart` as the source of truth; update Figma variables to match when tokens change.
+The tokens are mirrored to a Figma library — **[VILLAWOLF — Design System](https://www.figma.com/design/EYKFfptQSEVoidCzz5Nvfb)**
+— generated via the official Figma MCP, so design and code stay in sync.
+
+![Figma reference](img/figma-ds-reference.png)
+
+Contents:
+- **Variable collections**: `Color · Dark` and `Color · Light` (31 semantic tokens each), `Spacing`
+  (base-4), `Radius`.
+- **Text styles**: the 10-step Inter scale (Display → Overline).
+- **Reference board**: type specimen + Dark/Light palette swatches.
+
+> **Plan caveat:** the Figma Starter plan allows only **1 mode per variable collection**, so Dark and
+> Light live in *separate* collections (`Color · Dark` / `Color · Light`) rather than two modes of one
+> collection. On a Professional plan, merge them into a single `Color` collection with `Dark`/`Light`
+> modes.
+
+Keep `semantic_tokens.dart` as the source of truth; update the Figma variables to match when tokens
+change. **Follow-up:** build the component variant sets (buttons, inputs, badges, cards, …) in Figma
+and wire Code Connect to the Flutter widgets.
 
 ## Verify
 
